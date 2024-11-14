@@ -1,9 +1,9 @@
-import * as NavigationMenu from "@radix-ui/react-navigation-menu";
-import Link from "next/link";
+import * as NavigationMenu from "@radix-ui/react-navigation-menu"
+import Link from "next/link"
 
 export default function Header() {
   return (
-    <header className="p-3 border-b border-zinc-700">
+    <header className="border-b border-zinc-700 p-3">
       <NavigationMenu.Root>
         <NavigationMenu.List>
           <NavigationMenu.Item>
@@ -16,5 +16,5 @@ export default function Header() {
         </NavigationMenu.List>
       </NavigationMenu.Root>
     </header>
-  );
+  )
 }

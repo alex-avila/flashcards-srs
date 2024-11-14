@@ -1,5 +1,5 @@
-import Header from "@/components/ui/header";
-import Decks from "@/components/ui/decks";
+import Header from "@/components/ui/header"
+import Decks from "@/components/ui/decks"
 
 export default function Dashboard() {
   return (
@@ -9,5 +9,5 @@ export default function Dashboard() {
         <Decks />
       </div>
     </div>
-  );
+  )
 }
