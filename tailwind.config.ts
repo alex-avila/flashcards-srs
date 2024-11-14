@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss"
+import { fontFamily as defaultFontFamily } from "tailwindcss/defaultTheme"
 import tailwindcssAnimate from "tailwindcss-animate"
 
 const config: Config = {
@@ -10,6 +11,15 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "var(--font-zen-kaku-gothic-new)",
+          "Arial",
+          "Helvetica",
+          "sans-serif",
+          ...defaultFontFamily.sans,
+        ],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

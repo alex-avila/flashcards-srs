@@ -3,7 +3,7 @@ import Link from "next/link"
 
 export default function Header() {
   return (
-    <header className="border-b border-zinc-700 p-3">
+    <header className="border-b p-4">
       <NavigationMenu.Root>
         <NavigationMenu.List>
           <NavigationMenu.Item>
