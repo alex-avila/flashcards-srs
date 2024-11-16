@@ -1,5 +1,6 @@
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 const decks = [
   {
@@ -40,21 +41,33 @@ export default function Decks() {
         return (
           <Card key={deck.name}>
             <CardHeader>
-              <CardTitle>{deck.name}</CardTitle>
+              <CardTitle>
+                <Link href="/" className="underline">
+                  <h3>{deck.name}</h3>
+                </Link>
+              </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="flex gap-4">
-                <div>
-                  <div>lessons: {lessonsCount || 0}</div>
-                  <Link href="/" className="underline">
-                    start lessons
-                  </Link>
+              <div className="flex flex-col">
+                <div className="space-y-2 pb-3">
+                  <div>lessons: {lessonsCount}</div>
+                  {lessonsCount ? (
+                    <Button asChild>
+                      <Link href="/">start lessons</Link>
+                    </Button>
+                  ) : (
+                    <div>no more lessons for today!</div>
+                  )}
                 </div>
-                <div>
-                  <div>reviews: {reviewsCount || 0}</div>
-                  <Link href="/" className="underline">
-                    start reviews
-                  </Link>
+                <div className="space-y-2 border-t pt-3">
+                  <div>reviews: {reviewsCount}</div>
+                  {reviewsCount ? (
+                    <Button asChild>
+                      <Link href="/">start reviews</Link>
+                    </Button>
+                  ) : (
+                    <div>no more reviews to do right now</div>
+                  )}
                 </div>
               </div>
             </CardContent>

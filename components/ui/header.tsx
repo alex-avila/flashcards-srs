@@ -4,7 +4,7 @@ import Link from "next/link"
 
 export default function Header() {
   return (
-    <header className="border-b p-4">
+    <header className="mx-4 border-b py-4">
       <NavigationMenu.Root>
         <NavigationMenu.List className="flex items-center">
           <NavigationMenu.Item>
