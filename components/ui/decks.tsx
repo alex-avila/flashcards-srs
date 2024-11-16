@@ -26,9 +26,9 @@ export default function Decks() {
     <section className="grid grid-cols-1 gap-4">
       <div className="flex items-center justify-between">
         <h2 className="font-medium">all decks</h2>
-        <Link href="/" className="underline">
-          + new deck
-        </Link>
+        <Button asChild variant="link">
+          <Link href="/decks/new">+ new deck</Link>
+        </Button>
       </div>
       {decks.map(deck => {
         const lessonsCount = deck.cards.filter(
