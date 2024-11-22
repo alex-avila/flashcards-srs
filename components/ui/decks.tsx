@@ -1,24 +1,7 @@
 import Link from "next/link"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-
-const decks = [
-  {
-    name: "katakana",
-    cards: [
-      {
-        front: "ア",
-        back: "a",
-        level: 0,
-        lastReviewed: null,
-      },
-    ],
-  },
-  {
-    name: "geometry",
-    cards: [],
-  },
-]
+import { decks, cards } from "@/db/placeholder"
 
 export default function Decks() {
   // TODO: add actual links to dynamic route segments and stuff
@@ -31,18 +14,19 @@ export default function Decks() {
         </Button>
       </div>
       {decks.map(deck => {
-        const lessonsCount = deck.cards.filter(
-          card => card.lastReviewed === null
+        const deckCards = cards.filter(card => card.deck_id === deck.id)
+        const lessonsCount = deckCards.filter(
+          card => card.last_correct_date === null
         ).length
-        const reviewsCount = deck.cards.filter(
-          card => card.lastReviewed !== null
+        const reviewsCount = deckCards.filter(
+          card => card.last_correct_date !== null
         ).length
 
         return (
           <Card key={deck.name}>
             <CardHeader>
               <CardTitle>
-                <Link href="/" className="underline">
+                <Link href={`/decks/${deck.id}`} className="underline">
                   <h3>{deck.name}</h3>
                 </Link>
               </CardTitle>
