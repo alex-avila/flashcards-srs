@@ -22,18 +22,15 @@ import {
   SelectValue,
 } from "@/app/components/ui/select"
 import { Input } from "@/app/components/ui/input"
-// TODO: reconsider the name of the 'State'
 import { createDeck, ActionsState } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
 import { formSchema } from "@/app/lib/schemas"
 import { Button } from "@/app/components/ui/button"
 
-const initialState: ActionsState = { success: false }
+const initialState: ActionsState = { message: "" }
 
 // source: https://github.com/react-hook-form/react-hook-form/issues/10391
 // this form creates a new deck and redirects to the deck page in which the user can create cards
-// TODO: look into using useOptimistic and a state management solution maybe to show the created deck page
-// - s(with a message saying that it's being created)
 export default function NewDeckForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -84,7 +81,12 @@ export default function NewDeckForm() {
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>description</FormLabel>
+              <FormLabel>
+                description{" "}
+                <span className="font-normal text-muted-foreground">
+                  (optional)
+                </span>
+              </FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -140,7 +142,24 @@ export default function NewDeckForm() {
           )}
         />
         <div className="pt-2">
-          <Button type="submit">create</Button>
+          {state.message && (
+            <div className="pb-3 text-sm text-destructive">
+              <div className="font-medium">{state.message}</div>
+              {state.errors && (
+                <ul className="list-disc ps-5 pt-0.5">
+                  {state.errors.map(error => (
+                    <li key={error}>{error}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+          <Button type="button" onClick={() => form.trigger()}>
+            test
+          </Button>
+          <Button type="submit" disabled={isPending}>
+            {!isPending ? "create" : "creating..."}
+          </Button>
         </div>
       </form>
     </Form>

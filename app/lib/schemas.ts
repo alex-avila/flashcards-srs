@@ -9,5 +9,5 @@ export const formSchema = z
     lessonsBatchSize: z.coerce.number().min(3).max(9),
   })
   .refine(data => data.lessonsPerDay >= data.lessonsBatchSize, {
-    message: "lessonsPerDay should be at least as big as lessonsBatchSize",
+    message: "lessons per day must be more than or equal to lessons batch size",
   })
