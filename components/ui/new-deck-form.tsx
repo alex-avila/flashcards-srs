@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form"
 import {
   Select,
@@ -22,18 +23,26 @@ import {
 } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 // TODO: reconsider the name of the 'State'
-import { createDeck, State } from "@/lib/actions"
-// TODO: reconsider the placement of formSchema
+import { createDeck, ActionsState } from "@/lib/actions"
+// TODO: reconsider the location of formSchema
 import { formSchema } from "@/lib/schemas"
 import { Button } from "@/components/ui/button"
 
-const initialState: State = { message: "" }
+const initialState: ActionsState = { success: false }
 
 // source: https://github.com/react-hook-form/react-hook-form/issues/10391
+// this form creates a new deck and redirects to the deck page in which the user can create cards
+// TODO: look into using useOptimistic and a state management solution maybe to show the created deck page
+// - (with a message saying that it's being created)
 export default function NewDeckForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: { name: "", lessonsPerDay: 15, lessonsBatchSize: 5 },
+    defaultValues: {
+      name: "",
+      description: "",
+      lessonsPerDay: 15,
+      lessonsBatchSize: 5,
+    },
   })
   const [state, formAction, isPending] = useActionState(
     createDeck,
@@ -72,13 +81,29 @@ export default function NewDeckForm() {
         />
         <FormField
           control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>description</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
           name="lessonsPerDay"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Lessons per day</FormLabel>
+              <FormLabel>lessons per day</FormLabel>
               <FormControl>
                 <Input type="number" {...field} />
               </FormControl>
+              <FormDescription>
+                goal for how many cards you wanna learn per day
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -88,7 +113,7 @@ export default function NewDeckForm() {
           name="lessonsBatchSize"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Lessons batch size</FormLabel>
+              <FormLabel>lessons batch size</FormLabel>
               <Select
                 name="lessonsBatchSize"
                 onValueChange={field.onChange}
@@ -107,12 +132,15 @@ export default function NewDeckForm() {
                   ))}
                 </SelectContent>
               </Select>
+              <FormDescription>
+                how many cards to learn per learn session
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
         <div className="pt-2">
-          <Button type="submit">Create</Button>
+          <Button type="submit">create</Button>
         </div>
       </form>
     </Form>
