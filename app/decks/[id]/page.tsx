@@ -1,4 +1,5 @@
-import { decks } from "@/db/placeholder"
+import { decks } from "@/app/db/placeholder"
+
 export default async function ViewDeckPage({
   params,
 }: {

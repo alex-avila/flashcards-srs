@@ -1,4 +1,4 @@
-import NewDeckForm from "@/components/ui/new-deck-form"
+import NewDeckForm from "@/app/components/ui/new-deck-form"
 
 export default function NewDeck() {
   return (

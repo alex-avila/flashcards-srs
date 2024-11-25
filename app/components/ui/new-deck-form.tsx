@@ -13,27 +13,27 @@ import {
   FormControl,
   FormMessage,
   FormDescription,
-} from "@/components/ui/form"
+} from "@/app/components/ui/form"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
+} from "@/app/components/ui/select"
+import { Input } from "@/app/components/ui/input"
 // TODO: reconsider the name of the 'State'
-import { createDeck, ActionsState } from "@/lib/actions"
+import { createDeck, ActionsState } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
-import { formSchema } from "@/lib/schemas"
-import { Button } from "@/components/ui/button"
+import { formSchema } from "@/app/lib/schemas"
+import { Button } from "@/app/components/ui/button"
 
 const initialState: ActionsState = { success: false }
 
 // source: https://github.com/react-hook-form/react-hook-form/issues/10391
 // this form creates a new deck and redirects to the deck page in which the user can create cards
 // TODO: look into using useOptimistic and a state management solution maybe to show the created deck page
-// - (with a message saying that it's being created)
+// - s(with a message saying that it's being created)
 export default function NewDeckForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),

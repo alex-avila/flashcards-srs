@@ -1,7 +1,12 @@
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { decks, cards } from "@/db/placeholder"
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card"
+import { Button } from "@/app/components/ui/button"
+import { decks, cards } from "@/app/db/placeholder"
 
 export default function Decks() {
   // TODO: add actual links to dynamic route segments and stuff

@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/app/components/theme-provider"
 import { zenKakuGothicNew } from "@/app/fonts"
-import Header from "@/components/ui/header"
+import Header from "@/app/components/ui/header"
 import "./globals.css"
 
 // TODO: improve metadata

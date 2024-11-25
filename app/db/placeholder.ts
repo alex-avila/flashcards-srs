@@ -1,4 +1,4 @@
-import { User, Deck, Card } from "@/db/schema"
+import { User, Deck, Card } from "@/app/db/schema"
 
 export const users: User[] = [
   {
