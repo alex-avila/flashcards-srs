@@ -154,9 +154,6 @@ export default function NewDeckForm() {
               )}
             </div>
           )}
-          <Button type="button" onClick={() => form.trigger()}>
-            test
-          </Button>
           <Button type="submit" disabled={isPending}>
             {!isPending ? "create" : "creating..."}
           </Button>
