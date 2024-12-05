@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
-import { ThemeProvider } from "@/app/components/theme-provider"
 import { zenKakuGothicNew } from "@/app/fonts"
+import { ThemeProvider } from "@/app/components/theme-provider"
+import { Toaster } from "./components/ui/toaster"
 import Header from "@/app/components/ui/header"
 import "./globals.css"
 
@@ -30,6 +31,7 @@ export default function RootLayout({
         >
           <Header />
           <main className="p-4">{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
