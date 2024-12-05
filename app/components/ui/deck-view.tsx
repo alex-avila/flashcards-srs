@@ -14,13 +14,12 @@ import { Button } from "@/app/components/ui/button"
 import NewCardSheet from "@/app/components/ui/new-card-sheet"
 import { useState } from "react"
 
-export default function DeckView({
-  deckName,
-  cards,
-}: {
+interface DeckViewProps {
+  deckId: string
   deckName: string
   cards: Card[]
-}) {
+}
+export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
   const [open, setOpen] = useState(false)
 
   return (
@@ -63,7 +62,7 @@ export default function DeckView({
           </TableBody>
         </Table>
 
-        <NewCardSheet open={open} onOpenChange={setOpen} />
+        <NewCardSheet deckId={deckId} open={open} onOpenChange={setOpen} />
       </div>
     </div>
   )

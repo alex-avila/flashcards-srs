@@ -11,3 +11,9 @@ export const formSchema = z
   .refine(data => data.lessonsPerDay >= data.lessonsBatchSize, {
     message: "lessons per day must be more than or equal to lessons batch size",
   })
+
+export const cardFormSchema = z.object({
+  front: z.string().min(1),
+  back: z.string().min(1),
+  context: z.string().optional(),
+})

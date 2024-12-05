@@ -1,35 +1,53 @@
 "use client"
 
+import { DialogProps } from "@radix-ui/react-dialog"
 import {
   Sheet,
   SheetPortal,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetTrigger,
+  SheetFooter,
 } from "@/app/components/ui/sheet"
-import { DialogProps } from "@radix-ui/react-dialog"
+import NewCardForm from "@/app/components/ui/new-card-form"
+import { Button } from "@/app/components/ui/button"
+import { useState } from "react"
 
-export default function NewCardSheet({
-  open,
-  onOpenChange,
-}: {
+const FORM_ID = "new-card-form"
+
+interface NewCardSheetProps {
+  deckId: string
   open: boolean
   onOpenChange: DialogProps["onOpenChange"]
-}) {
+}
+
+export default function NewCardSheet({
+  deckId,
+  open,
+  onOpenChange,
+}: NewCardSheetProps) {
+  const [isPending, setIsPending] = useState(false)
+
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetTrigger>Open</SheetTrigger>
       <SheetPortal>
         <SheetContent side="bottom">
           <SheetHeader>
-            <SheetTitle>Are you absolutely sure?</SheetTitle>
-            <SheetDescription>
-              This action cannot be undone. This will permanently delete your
-              account and remove your data from our servers.
-            </SheetDescription>
+            <SheetTitle>create a new card</SheetTitle>
           </SheetHeader>
+          <div className="pb-4 text-left">
+            <NewCardForm
+              formId={FORM_ID}
+              deckId={deckId}
+              onIsPendingUpdate={setIsPending}
+              withSubmitButton={false}
+            />
+          </div>
+          <SheetFooter>
+            <Button form={FORM_ID} type="submit" disabled={isPending}>
+              {!isPending ? "create" : "creating..."}
+            </Button>
+          </SheetFooter>
         </SheetContent>
       </SheetPortal>
     </Sheet>

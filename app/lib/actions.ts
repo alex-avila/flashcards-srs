@@ -3,10 +3,17 @@
 import { redirect } from "next/navigation"
 // TODO: figure out if revalidatePath is strictly necessary
 import { revalidatePath } from "next/cache"
-import { formSchema } from "./schemas"
+import { cardFormSchema, formSchema } from "./schemas"
+
+const ACTION_MESSAGES = {
+  success: "success",
+  failedParsing: "Form data parsing failed.",
+  unexpected: "Unexpected error. Please try again.",
+}
 
 export type ActionsState = {
   message: string
+  success?: boolean
   errors?: string[]
 }
 
@@ -25,14 +32,14 @@ export async function createDeck(
 
     if (!parsed.success) {
       return {
-        message: "Form data parsing failed.",
+        message: ACTION_MESSAGES.failedParsing,
         errors: parsed.error.issues.map(issue => issue.message),
       }
     }
   } catch (error) {
     console.error(error) // this would be logged to something like Sentry
     return {
-      message: "Unexpected error. Please try again.",
+      message: ACTION_MESSAGES.unexpected,
     }
   }
 
@@ -42,4 +49,39 @@ export async function createDeck(
   // redirect internally throws an error so it needs to be outside of catch block
   revalidatePath("/decks")
   redirect(`/decks/${id}`)
+}
+
+export async function createCard(
+  deckId: string,
+  prevState: ActionsState,
+  formData: FormData
+): Promise<ActionsState> | never {
+  try {
+    const data = {
+      deck_id: deckId,
+      front: formData.get("front"),
+      back: formData.get("back"),
+      context: formData.get("context"),
+    }
+    const parsed = cardFormSchema.safeParse(data)
+
+    if (!parsed.success) {
+      return {
+        message: ACTION_MESSAGES.failedParsing,
+        errors: parsed.error.issues.map(issue => issue.message),
+      }
+    }
+
+    revalidatePath(`/decks/${deckId}`)
+
+    return {
+      message: ACTION_MESSAGES.success,
+      success: true,
+    }
+  } catch (error) {
+    console.error(error) // this would be logged to something like Sentry
+    return {
+      message: ACTION_MESSAGES.unexpected,
+    }
+  }
 }
