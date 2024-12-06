@@ -22,6 +22,7 @@ import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
 import { useCardActions } from "@/app/hooks/use-card-actions"
 import { Card } from "@/app/db/schema"
+import Link from "next/link"
 
 interface DeckViewProps {
   deckId: string
@@ -37,7 +38,19 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="font-medium">{deckName}</h2>
+        <h2 className="font-medium">
+          {deckName}{" "}
+          <span className="text-xs font-normal">
+            (
+            <Link
+              href={`/decks/${deckId}/edit`}
+              className="cursor-pointer underline-offset-4 hover:underline"
+            >
+              edit
+            </Link>
+            )
+          </span>
+        </h2>
         <Button
           variant="link"
           onClick={() => cardActionsDispatch({ type: "START_CREATE" })}

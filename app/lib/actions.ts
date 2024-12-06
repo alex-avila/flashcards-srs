@@ -51,6 +51,40 @@ export async function createDeck(
   redirect(`/decks/${id}`)
 }
 
+export async function editDeck(
+  deckId: string,
+  prevState: ActionsState,
+  formData: FormData
+): Promise<ActionsState> | never {
+  try {
+    const data = {
+      name: formData.get("name"),
+      description: formData.get("description"),
+      lessonsPerDay: formData.get("lessonsPerDay"),
+      lessonsBatchSize: formData.get("lessonsBatchSize"),
+    }
+    const parsed = formSchema.safeParse(data)
+
+    if (!parsed.success) {
+      return {
+        message: ACTION_MESSAGES.failedParsing,
+        errors: parsed.error.issues.map(issue => issue.message),
+      }
+    }
+  } catch (error) {
+    console.error(error) // this would be logged to something like Sentry
+    return {
+      message: ACTION_MESSAGES.unexpected,
+    }
+  }
+
+  // TODO: connect to database and use deckId
+  //
+  // redirect internally throws an error so it needs to be outside of catch block
+  revalidatePath("/decks")
+  redirect(`/decks/${deckId}`)
+}
+
 export async function createCard(
   deckId: string,
   prevState: ActionsState,

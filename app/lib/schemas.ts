@@ -4,7 +4,7 @@ import { z } from "zod"
 export const formSchema = z
   .object({
     name: z.string().min(1),
-    description: z.string().min(1),
+    description: z.string().optional(),
     lessonsPerDay: z.coerce.number().min(3),
     lessonsBatchSize: z.coerce.number().min(3).max(9),
   })
