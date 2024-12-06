@@ -21,7 +21,11 @@ import { cardFormSchema } from "@/app/lib/schemas"
 import { Button } from "@/app/components/ui/button"
 import { useToast } from "@/app/hooks/use-toast"
 
-const initialState: ActionsState = { message: "" }
+const formDefaultValues = {
+  front: "",
+  back: "",
+  context: "",
+}
 
 interface NewCardFormProps {
   deckId: string
@@ -38,15 +42,11 @@ export default function NewCardForm({
 }: NewCardFormProps) {
   const form = useForm<z.infer<typeof cardFormSchema>>({
     resolver: zodResolver(cardFormSchema),
-    defaultValues: {
-      front: "",
-      back: "",
-      context: "",
-    },
+    defaultValues: formDefaultValues,
   })
   const [state, formAction, isPending] = useActionState(
     createCard.bind(null, deckId),
-    initialState
+    { message: "" } as ActionsState
   )
   const { toast } = useToast()
 
@@ -58,9 +58,20 @@ export default function NewCardForm({
 
   useEffect(() => {
     if (state.success) {
-      toast({ title: "card created" })
+      const { dismiss } = toast({
+        description: (
+          <div>
+            <strong>{form.getValues("front")}</strong> card created
+          </div>
+        ),
+      })
+
+      setTimeout(dismiss, 5000)
+
+      form.setFocus("front")
+      form.reset(formDefaultValues)
     }
-  }, [state, toast])
+  }, [state, toast, form])
 
   const BottomWrapper = withSubmitButton ? "div" : Fragment
   const bottomWrapperProps = withSubmitButton ? { className: "pt-2" } : {}
@@ -88,7 +99,7 @@ export default function NewCardForm({
             <FormItem>
               <FormLabel>front</FormLabel>
               <FormControl>
-                <Input {...field} />
+                <Input autoFocus {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,7 +130,7 @@ export default function NewCardForm({
                 </span>
               </FormLabel>
               <FormControl>
-                <Input type="number" {...field} />
+                <Input {...field} />
               </FormControl>
               <FormDescription>
                 any additional content (e.g. mnemonic devices)

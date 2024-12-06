@@ -3,6 +3,7 @@
 import { DialogProps } from "@radix-ui/react-dialog"
 import {
   Sheet,
+  SheetDescription,
   SheetPortal,
   SheetContent,
   SheetHeader,
@@ -34,6 +35,9 @@ export default function NewCardSheet({
         <SheetContent side="bottom">
           <SheetHeader>
             <SheetTitle>create a new card</SheetTitle>
+            <SheetDescription className="sr-only">
+              create a new card to add to the current deck
+            </SheetDescription>
           </SheetHeader>
           <div className="pb-4 text-left">
             <NewCardForm
