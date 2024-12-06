@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState } from "react"
+import { useActionState, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -22,29 +22,43 @@ import {
   SelectValue,
 } from "@/app/components/ui/select"
 import { Input } from "@/app/components/ui/input"
-import { createDeck, ActionsState } from "@/app/lib/actions"
+import { createDeck, editDeck, ActionsState } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
 import { formSchema } from "@/app/lib/schemas"
 import { Button } from "@/app/components/ui/button"
+import { Deck } from "@/app/db/schema"
 
 const initialState: ActionsState = { message: "" }
 
+// TODO: make this more generic to support editing a deck, not just creating one
+
 // source: https://github.com/react-hook-form/react-hook-form/issues/10391
 // this form creates a new deck and redirects to the deck page in which the user can create cards
-export default function NewDeckForm() {
+export function DeckForm({
+  deck,
+  submitLabel = "submit",
+  submitPendingLabel = "submitting…",
+}: {
+  deck?: Deck
+  submitLabel: string
+  submitPendingLabel: string
+}) {
+  const formDefaultValues = useMemo(
+    () => ({
+      name: deck?.name || "",
+      description: deck?.description || "",
+      lessonsPerDay: deck?.lessons_per_day || 15,
+      lessonsBatchSize: deck?.lessons_batch_size || 5,
+    }),
+    [deck]
+  )
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      lessonsPerDay: 15,
-      lessonsBatchSize: 5,
-    },
+    defaultValues: formDefaultValues,
   })
-  const [state, formAction, isPending] = useActionState(
-    createDeck,
-    initialState
-  )
+
+  const action = deck ? editDeck.bind(null, deck.id) : createDeck
+  const [state, formAction, isPending] = useActionState(action, initialState)
 
   // TODO: show parsed errors that happen in the createDeck action due to failing parsing
 
@@ -155,7 +169,7 @@ export default function NewDeckForm() {
             </div>
           )}
           <Button type="submit" disabled={isPending}>
-            {!isPending ? "create" : "creating..."}
+            {!isPending ? submitLabel : submitPendingLabel}
           </Button>
         </div>
       </form>

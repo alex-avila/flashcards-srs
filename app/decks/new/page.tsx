@@ -1,10 +1,10 @@
-import NewDeckForm from "@/app/components/ui/new-deck-form"
+import { DeckForm } from "@/app/components/ui/deck-form"
 
 export default function NewDeck() {
   return (
     <div>
       <h2 className="pb-5 font-bold">create a new deck</h2>
-      <NewDeckForm />
+      <DeckForm submitLabel="create" submitPendingLabel="creating…" />
     </div>
   )
 }
