@@ -28,7 +28,7 @@ export function Flashcard({ card }: FlashcardProps) {
         "bg-primary": view === "back",
       })}
     >
-      <div className="rounded-lg border border-primary bg-secondary p-2">
+      <div className="rounded-lg border border-primary bg-secondary p-2 dark:border-muted-foreground">
         <div className="flex justify-between pb-2">
           <div className="flex gap-1.5" aria-hidden>
             {[...new Array(card.level || 1).keys()].map((_, i) => (
