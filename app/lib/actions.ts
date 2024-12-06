@@ -85,3 +85,40 @@ export async function createCard(
     }
   }
 }
+
+export async function editCard(
+  deckId: string,
+  cardId: string,
+  prevState: ActionsState,
+  formData: FormData
+): Promise<ActionsState> | never {
+  try {
+    const data = {
+      front: formData.get("front"),
+      back: formData.get("back"),
+      context: formData.get("context"),
+    }
+    const parsed = cardFormSchema.safeParse(data)
+
+    if (!parsed.success) {
+      return {
+        message: ACTION_MESSAGES.failedParsing,
+        errors: parsed.error.issues.map(issue => issue.message),
+      }
+    }
+
+    // update card with cardId && deckId
+
+    revalidatePath(`/decks/${deckId}`)
+
+    return {
+      message: ACTION_MESSAGES.success,
+      success: true,
+    }
+  } catch (error) {
+    console.error(error) // this would be logged to something like Sentry
+    return {
+      message: ACTION_MESSAGES.unexpected,
+    }
+  }
+}

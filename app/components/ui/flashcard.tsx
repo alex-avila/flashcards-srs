@@ -1,15 +1,8 @@
-import { Sparkle, EllipsisVertical } from "lucide-react"
-import clsx from "clsx"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/app/components/ui/dropdown-menu"
+import { useState } from "react"
+import { clsx } from "clsx"
+import { Sparkle } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { Card as CardSchema } from "@/app/db/schema"
-import { useState } from "react"
 
 export interface FlashcardProps {
   card: CardSchema
@@ -41,19 +34,6 @@ export function Flashcard({ card }: FlashcardProps) {
             ))}
           </div>
           <div className="sr-only">level: {card.level}</div>
-          <DropdownMenu>
-            <DropdownMenuTrigger className="h-4 p-0 text-xs">
-              <EllipsisVertical
-                className="size-4"
-                aria-label="open card actions dropdown menu"
-              />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem>edit</DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>delete</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         <div className="flex flex-col">

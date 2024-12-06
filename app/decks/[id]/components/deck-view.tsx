@@ -1,6 +1,6 @@
 "use client"
 
-import { Card } from "@/app/db/schema"
+import { Ellipsis } from "lucide-react"
 import {
   Table,
   TableBody,
@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/app/components/ui/table"
-import { Button } from "@/app/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,25 +17,31 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu"
-import { Ellipsis } from "lucide-react"
-import NewCardSheet from "@/app/components/ui/new-card-sheet"
-import { useState } from "react"
-import { FlashcardDialog } from "./flashcard-dialog"
+import { Button } from "@/app/components/ui/button"
+import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
+import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
+import { useCardActions } from "@/app/hooks/use-card-actions"
+import { Card } from "@/app/db/schema"
 
 interface DeckViewProps {
   deckId: string
   deckName: string
   cards: Card[]
 }
+
 export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
-  const [open, setOpen] = useState(false)
-  const [activeCard, setActiveCard] = useState<Card | null>(null)
+  const [cardActionsState, cardActionsDispatch] = useCardActions({
+    mode: "idle",
+  })
 
   return (
     <div>
       <div className="flex items-center justify-between">
         <h2 className="font-medium">{deckName}</h2>
-        <Button variant="link" onClick={() => setOpen(true)}>
+        <Button
+          variant="link"
+          onClick={() => cardActionsDispatch({ type: "START_CREATE" })}
+        >
           + new card
         </Button>
       </div>
@@ -78,12 +83,28 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
-                      <DropdownMenuItem onClick={() => setActiveCard(card)}>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          cardActionsDispatch({ card, type: "VIEW" })
+                        }
+                      >
                         view
                       </DropdownMenuItem>
-                      <DropdownMenuItem>edit</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          cardActionsDispatch({ card, type: "START_EDIT" })
+                        }
+                      >
+                        edit
+                      </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem>delete</DropdownMenuItem>
+                      <DropdownMenuItem
+                        onClick={() =>
+                          cardActionsDispatch({ card, type: "DELETE" })
+                        }
+                      >
+                        delete
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>
@@ -93,11 +114,29 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
         </Table>
 
         <FlashcardDialog
-          open={Boolean(activeCard)}
-          onOpenChange={open => !open && setActiveCard(null)}
-          card={activeCard}
+          card={cardActionsState.card}
+          open={cardActionsState.mode === "view"}
+          onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
         />
-        <NewCardSheet deckId={deckId} open={open} onOpenChange={setOpen} />
+        <FlashcardSheet
+          deckId={deckId}
+          open={cardActionsState.mode === "create"}
+          onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
+          title="create a new card"
+          description="enter new card details and submit to add to the deck"
+          submitLabel="create"
+          submitPendingLabel="creating…"
+        />
+        <FlashcardSheet
+          deckId={deckId}
+          card={cardActionsState.card}
+          open={cardActionsState.mode === "edit"}
+          onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
+          title="edit"
+          description="edit card details and submit to update"
+          submitLabel="update"
+          submitPendingLabel="updating…"
+        />
       </div>
     </div>
   )

@@ -1,6 +1,4 @@
-"use client"
-
-import { useActionState, useEffect, Fragment } from "react"
+import { useActionState, useEffect, Fragment, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -15,39 +13,53 @@ import {
   FormDescription,
 } from "@/app/components/ui/form"
 import { Input } from "@/app/components/ui/input"
-import { ActionsState, createCard } from "@/app/lib/actions"
+import { Button } from "@/app/components/ui/button"
+import { ActionsState, createCard, editCard } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
 import { cardFormSchema } from "@/app/lib/schemas"
-import { Button } from "@/app/components/ui/button"
 import { useToast } from "@/app/hooks/use-toast"
+import { Card } from "@/app/db/schema"
 
-const formDefaultValues = {
-  front: "",
-  back: "",
-  context: "",
-}
-
-interface NewCardFormProps {
+interface FlashcardFormProps {
   deckId: string
+  card?: Card
   formId?: string
   onIsPendingUpdate?: (isPending: boolean) => void
   withSubmitButton?: boolean
+  submitLabel?: string
+  submitPendingLabel?: string
 }
 
-export default function NewCardForm({
+export function FlashcardForm({
   deckId,
+  card,
   formId,
   onIsPendingUpdate,
   withSubmitButton = true,
-}: NewCardFormProps) {
+  submitLabel = "submit",
+  submitPendingLabel = "submitting…",
+}: FlashcardFormProps) {
+  // use useMemo to only recalculate this when card is updated
+  const formDefaultValues = useMemo(
+    () => ({
+      front: card?.front || "",
+      back: card?.back || "",
+      context: card?.context || "",
+    }),
+    [card]
+  )
   const form = useForm<z.infer<typeof cardFormSchema>>({
     resolver: zodResolver(cardFormSchema),
     defaultValues: formDefaultValues,
   })
-  const [state, formAction, isPending] = useActionState(
-    createCard.bind(null, deckId),
-    { message: "" } as ActionsState
-  )
+
+  const action = card
+    ? editCard.bind(null, deckId, card.id)
+    : createCard.bind(null, deckId)
+  const [state, formAction, isPending] = useActionState(action, {
+    message: "",
+  } as ActionsState)
+
   const { toast } = useToast()
 
   useEffect(() => {
@@ -71,10 +83,16 @@ export default function NewCardForm({
       form.setFocus("front")
       form.reset(formDefaultValues)
     }
-  }, [state, toast, form])
+  }, [state, toast, form, formDefaultValues])
 
-  const BottomWrapper = withSubmitButton ? "div" : Fragment
-  const bottomWrapperProps = withSubmitButton ? { className: "pt-2" } : {}
+  const BottomWrapper = useMemo(
+    () => (withSubmitButton ? "div" : Fragment),
+    [withSubmitButton]
+  )
+  const bottomWrapperProps = useMemo(
+    () => (withSubmitButton ? { className: "pt-2" } : {}),
+    [withSubmitButton]
+  )
 
   return (
     <Form {...form}>
@@ -154,7 +172,7 @@ export default function NewCardForm({
           )}
           {withSubmitButton && (
             <Button type="submit" disabled={isPending}>
-              {!isPending ? "create" : "creating..."}
+              {!isPending ? submitLabel : submitPendingLabel}
             </Button>
           )}
         </BottomWrapper>

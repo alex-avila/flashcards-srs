@@ -1,5 +1,4 @@
-"use client"
-
+import { useState } from "react"
 import { DialogProps } from "@radix-ui/react-dialog"
 import {
   Sheet,
@@ -10,23 +9,33 @@ import {
   SheetTitle,
   SheetFooter,
 } from "@/app/components/ui/sheet"
-import NewCardForm from "@/app/components/ui/new-card-form"
+import { FlashcardForm } from "@/app/components/ui/flashcard-form"
 import { Button } from "@/app/components/ui/button"
-import { useState } from "react"
+import { Card } from "@/app/db/schema"
 
-const FORM_ID = "new-card-form"
+const FORM_ID = "card-sheet-form"
 
-interface NewCardSheetProps {
+interface FlashcardSheetProps {
   deckId: string
-  open: boolean
+  card?: Card
+  title: string
+  description: string
+  submitLabel: string
+  submitPendingLabel: string
   onOpenChange: DialogProps["onOpenChange"]
+  open: DialogProps["open"]
 }
 
-export default function NewCardSheet({
+export function FlashcardSheet({
   deckId,
-  open,
+  card,
+  title,
+  description,
+  submitLabel,
+  submitPendingLabel,
   onOpenChange,
-}: NewCardSheetProps) {
+  open,
+}: FlashcardSheetProps) {
   const [isPending, setIsPending] = useState(false)
 
   return (
@@ -34,22 +43,23 @@ export default function NewCardSheet({
       <SheetPortal>
         <SheetContent side="bottom">
           <SheetHeader>
-            <SheetTitle>create a new card</SheetTitle>
+            <SheetTitle>{title}</SheetTitle>
             <SheetDescription className="sr-only">
-              create a new card to add to the current deck
+              {description}
             </SheetDescription>
           </SheetHeader>
           <div className="pb-4 text-left">
-            <NewCardForm
+            <FlashcardForm
               formId={FORM_ID}
               deckId={deckId}
+              card={card}
               onIsPendingUpdate={setIsPending}
               withSubmitButton={false}
             />
           </div>
           <SheetFooter>
             <Button form={FORM_ID} type="submit" disabled={isPending}>
-              {!isPending ? "create" : "creating..."}
+              {!isPending ? submitLabel : submitPendingLabel}
             </Button>
           </SheetFooter>
         </SheetContent>

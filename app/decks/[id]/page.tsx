@@ -1,5 +1,5 @@
 import { decks, cards } from "@/app/db/placeholder"
-import DeckView from "@/app/components/ui/deck-view"
+import DeckView from "./components/deck-view"
 
 export default async function ViewDeckPage({
   params,
