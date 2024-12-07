@@ -15,6 +15,7 @@ export const decks: Deck[] = [
     id: "deck-001",
     user_id: "user-001",
     name: "Japanese Vocabulary",
+    description: "Some japanese vocabulary and hiragana and katakana",
     lessons_per_day: 15,
     lessons_batch_size: 5,
   },

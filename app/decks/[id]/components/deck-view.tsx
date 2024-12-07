@@ -17,20 +17,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu"
+import { Separator } from "@/app/components/ui/separator"
 import { Button } from "@/app/components/ui/button"
 import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
 import { useCardActions } from "@/app/hooks/use-card-actions"
-import { Card } from "@/app/db/schema"
+import { Card, Deck } from "@/app/db/schema"
 import Link from "next/link"
 
 interface DeckViewProps {
-  deckId: string
-  deckName: string
+  deck: Deck
   cards: Card[]
 }
 
-export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
+export default function DeckView({ deck, cards }: DeckViewProps) {
   const [cardActionsState, cardActionsDispatch] = useCardActions({
     mode: "idle",
   })
@@ -39,11 +39,11 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
     <div>
       <div className="flex items-center justify-between">
         <h2 className="font-medium">
-          {deckName}{" "}
+          {deck.name}{" "}
           <span className="text-xs font-normal">
             (
             <Link
-              href={`/decks/${deckId}/edit`}
+              href={`/decks/${deck.id}/edit`}
               className="cursor-pointer underline-offset-4 hover:underline"
             >
               edit
@@ -58,6 +58,22 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
           + new card
         </Button>
       </div>
+
+      <div className="mt-2 text-sm">
+        <div>{deck.description}</div>
+        <div className="mt-2 flex items-center space-x-3">
+          <div>
+            lessons per day:{" "}
+            <span className="font-medium">{deck.lessons_per_day}</span>
+          </div>
+          <Separator className="h-4" orientation="vertical" />
+          <div>
+            lessons batch size:{" "}
+            <span className="font-medium">{deck.lessons_batch_size}</span>
+          </div>
+        </div>
+      </div>
+
       <div className="pt-5">
         {/* TODO: use the data table example instead for more advanced features */}
         <Table>
@@ -132,7 +148,7 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
           onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
         />
         <FlashcardSheet
-          deckId={deckId}
+          deckId={deck.id}
           open={cardActionsState.mode === "create"}
           onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
           title="create a new card"
@@ -140,8 +156,9 @@ export default function DeckView({ deckId, deckName, cards }: DeckViewProps) {
           submitLabel="create"
           submitPendingLabel="creating…"
         />
+        {/* TODO: make sure edit sheet is closed after successfully editing */}
         <FlashcardSheet
-          deckId={deckId}
+          deckId={deck.id}
           card={cardActionsState.card}
           open={cardActionsState.mode === "edit"}
           onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}

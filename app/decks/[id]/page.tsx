@@ -19,7 +19,7 @@ export default async function ViewDeckPage({
   return (
     <div>
       {/* TODO: maybe rename component to something better */}
-      <DeckView deckId={deck.id} deckName={deck.name} cards={deckCards} />
+      <DeckView deck={deck} cards={deckCards} />
     </div>
   )
 }

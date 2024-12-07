@@ -171,6 +171,7 @@ export function DeckForm({
           <Button type="submit" disabled={isPending}>
             {!isPending ? submitLabel : submitPendingLabel}
           </Button>
+          {/* TODO: add a delete button */}
         </div>
       </form>
     </Form>
