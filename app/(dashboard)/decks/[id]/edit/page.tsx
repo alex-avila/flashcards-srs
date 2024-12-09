@@ -1,7 +1,7 @@
 import { decks } from "@/app/db/placeholder"
 import { DeckForm } from "@/app/components/ui/deck-form"
 
-export default async function EditDeck({
+export default async function EditDeckPage({
   params,
 }: {
   params: Promise<{ id: string }>
