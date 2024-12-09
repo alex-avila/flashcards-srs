@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { clsx } from "clsx"
 import { Sparkle } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
@@ -6,17 +6,28 @@ import { Card as CardSchema } from "@/app/db/schema"
 
 export interface FlashcardProps {
   card: CardSchema
+  canFlip: boolean
+  flipped: boolean
 }
 
-export function Flashcard({ card }: FlashcardProps) {
+export function Flashcard({
+  card,
+  canFlip = true,
+  flipped = false,
+}: FlashcardProps) {
   const [view, setView] = useState<"front" | "back">("front")
   const flip = () => {
     setView(view === "front" ? "back" : "front")
   }
 
+  // TODO: consider if this is the best way of controlling the flipped status of the card from the outside
+  useEffect(() => {
+    setView(flipped ? "back" : "front")
+  }, [flipped])
+
   return (
     <div
-      className={clsx("rounded-xl p-3", {
+      className={clsx("rounded-xl p-3 shadow-md", {
         "bg-secondary": view === "front",
         "bg-primary": view === "back",
       })}
@@ -46,9 +57,11 @@ export function Flashcard({ card }: FlashcardProps) {
             <div className="text-sm text-muted-foreground">
               {view === "back" ? "back" : "front"}
             </div>
-            <Button onClick={flip} variant="outline">
-              flip
-            </Button>
+            {canFlip && (
+              <Button onClick={flip} variant="outline">
+                flip
+              </Button>
+            )}
           </div>
         </div>
       </div>
