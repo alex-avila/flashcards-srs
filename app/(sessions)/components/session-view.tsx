@@ -94,7 +94,7 @@ export function SessionView({ deckId, cards }: SessionViewProps) {
 
   let buttonLabel = "Submit"
   if (isFinished) buttonLabel = "Finish!"
-  if (notInterrogating) buttonLabel = "Next"
+  else if (notInterrogating) buttonLabel = "Next"
 
   const checkAnswer = useCallback(() => {
     // set to finish if we're checking the answer of the final card
