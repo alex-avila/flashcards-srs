@@ -2,7 +2,6 @@ import type { Metadata } from "next"
 import { zenKakuGothicNew } from "@/app/fonts"
 import { ThemeProvider } from "@/app/components/theme-provider"
 import { Toaster } from "./components/ui/toaster"
-import Header from "@/app/components/ui/header"
 import "./globals.css"
 
 // TODO: improve metadata
@@ -29,8 +28,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <Header />
-          <main className="p-4">{children}</main>
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>
