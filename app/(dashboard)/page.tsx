@@ -1,4 +1,4 @@
-import Decks from "@/app/components/ui/decks"
+import Decks from "./components/decks"
 
 export default function DashboardPage() {
   return <Decks />

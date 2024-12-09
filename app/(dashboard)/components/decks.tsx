@@ -42,7 +42,7 @@ export default function Decks() {
                   <div>lessons: {lessonsCount}</div>
                   {lessonsCount ? (
                     <Button asChild>
-                      <Link href="/">start lessons</Link>
+                      <Link href={`/lessons/${deck.id}`}>start lessons</Link>
                     </Button>
                   ) : (
                     <div>no more lessons for today!</div>
@@ -52,7 +52,7 @@ export default function Decks() {
                   <div>reviews: {reviewsCount}</div>
                   {reviewsCount ? (
                     <Button asChild>
-                      <Link href="/">start reviews</Link>
+                      <Link href={`/reviews/${deck.id}`}>start reviews</Link>
                     </Button>
                   ) : (
                     <div>no more reviews to do right now</div>
