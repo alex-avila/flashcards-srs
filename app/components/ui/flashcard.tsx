@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { clsx } from "clsx"
 import { Sparkle } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
-import { Card as CardSchema } from "@/app/db/schema"
+import { Card as CardSchema } from "@/app/db/placeholder-schema"
 
 export interface FlashcardProps {
   card: CardSchema

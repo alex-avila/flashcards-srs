@@ -11,7 +11,7 @@ import {
 } from "@/app/components/ui/sheet"
 import { FlashcardForm } from "@/app/components/ui/flashcard-form"
 import { Button } from "@/app/components/ui/button"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 
 const FORM_ID = "card-sheet-form"
 

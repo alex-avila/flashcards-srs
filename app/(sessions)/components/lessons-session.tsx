@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 import { Flashcard } from "@/app/components/ui/flashcard"
 import { Progress } from "@/app/components/ui/progress"
 import { Button } from "@/app/components/ui/button"

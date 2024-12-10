@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 import { ReviewSession } from "./review-session"
 
 interface ReviewViewProps {

@@ -22,7 +22,7 @@ import { Button } from "@/app/components/ui/button"
 import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
 import { useCardActions } from "@/app/hooks/use-card-actions"
-import { Card, Deck } from "@/app/db/schema"
+import { Card, Deck } from "@/app/db/placeholder-schema"
 import Link from "next/link"
 
 interface DeckViewProps {

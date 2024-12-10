@@ -1,6 +1,6 @@
 import { useState, useMemo, useRef } from "react"
 import { clsx } from "clsx"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 import { Flashcard } from "@/app/components/ui/flashcard"
 import { Progress } from "@/app/components/ui/progress"
 import { Input } from "@/app/components/ui/input"

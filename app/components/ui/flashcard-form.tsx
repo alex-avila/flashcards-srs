@@ -18,7 +18,7 @@ import { ActionsState, createCard, editCard } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
 import { cardFormSchema } from "@/app/lib/schemas"
 import { useToast } from "@/app/hooks/use-toast"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 
 interface FlashcardFormProps {
   deckId: string

@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 import {
   Dialog,
   DialogContent,

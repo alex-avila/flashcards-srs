@@ -26,7 +26,7 @@ import { createDeck, editDeck, ActionsState } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
 import { formSchema } from "@/app/lib/schemas"
 import { Button } from "@/app/components/ui/button"
-import { Deck } from "@/app/db/schema"
+import { Deck } from "@/app/db/placeholder-schema"
 
 const initialState: ActionsState = { message: "" }
 

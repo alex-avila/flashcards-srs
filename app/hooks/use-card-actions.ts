@@ -1,5 +1,5 @@
 import { useReducer } from "react"
-import { Card } from "@/app/db/schema"
+import { Card } from "@/app/db/placeholder-schema"
 
 interface CardActionsState {
   card?: Card
