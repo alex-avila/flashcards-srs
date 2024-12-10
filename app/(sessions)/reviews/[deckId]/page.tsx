@@ -1,5 +1,5 @@
 import { decks, cards } from "@/app/db/placeholder"
-import { SessionView } from "../../components/session-view"
+import { ReviewView } from "../../components/review-view"
 
 interface ReviewsPageProps {
   params: Promise<{ deckId: string }>
@@ -23,9 +23,7 @@ export default async function ReviewsPage({ params }: ReviewsPageProps) {
     throw "deck not found"
   }
 
-  // 2.
-
   const dueCards = cards.filter(card => card.deck_id === deck.id)
   // .filter(card => card.next_review_date)
-  return <SessionView deckId={id} cards={dueCards} />
+  return <ReviewView deckId={id} cards={dueCards} />
 }
