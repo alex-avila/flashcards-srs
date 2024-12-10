@@ -8,19 +8,29 @@ export interface FlashcardProps {
   card: CardSchema
   canFlip?: boolean
   flipped?: boolean
+  onFlip?: (flipped: boolean) => void
 }
 
 export function Flashcard({
   card,
   canFlip = true,
+  // props to control flip state from parent
   flipped = false,
+  onFlip,
 }: FlashcardProps) {
   const [view, setView] = useState<"front" | "back">("front")
   const flip = () => {
+    if (onFlip) {
+      const shouldFlip = view === "front"
+      onFlip(shouldFlip)
+      return
+    }
+
     setView(view === "front" ? "back" : "front")
   }
 
   // TODO: consider if this is the best way of controlling the flipped status of the card from the outside
+  // should kinda mimic an input that can be controlled
   useEffect(() => {
     setView(flipped ? "back" : "front")
   }, [flipped])
