@@ -49,7 +49,11 @@ export function Flashcard({
 
         <div className="flex flex-col">
           <div className="flex w-48 justify-center self-center rounded px-4 py-6">
-            <div className="text-center text-xl">
+            {/* TODO: add 'lang' property to div properly */}
+            <div
+              className="text-center text-xl"
+              lang={view === "back" ? "en" : "ja"}
+            >
               {view === "back" ? card.back : card.front}
             </div>
           </div>
