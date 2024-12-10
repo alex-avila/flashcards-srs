@@ -6,8 +6,8 @@ import { Card as CardSchema } from "@/app/db/schema"
 
 export interface FlashcardProps {
   card: CardSchema
-  canFlip: boolean
-  flipped: boolean
+  canFlip?: boolean
+  flipped?: boolean
 }
 
 export function Flashcard({
