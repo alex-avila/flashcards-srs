@@ -5,6 +5,7 @@ import {
   varchar,
   check,
   timestamp,
+  unique,
 } from "drizzle-orm/pg-core"
 
 export const users = pgTable("users", {
@@ -17,18 +18,25 @@ export const usersRelations = relations(users, ({ many }) => ({
   decks: many(decks),
 }))
 
+export type SelectUser = typeof users.$inferSelect
+
 export const decks = pgTable(
   "decks",
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id").references(() => users.id),
     name: varchar({ length: 60 }).notNull(),
+    pathname: varchar(),
     description: varchar(),
     lessonsPerDay: integer("lessons_per_day").default(15),
     lessonsBatchSize: integer("lessons_batch_size").default(5),
   },
   table => [
     {
+      uniquePathnamesPerUser: unique("unique_pathnames_per_user").on(
+        table.userId,
+        table.pathname
+      ),
       validLessonsPerDay: check(
         "valid_lessons_per_day",
         sql`${table.lessonsPerDay} >= 0 AND ${table.lessonsPerDay} < 101`
@@ -45,6 +53,8 @@ export const decksRelations = relations(decks, ({ one, many }) => ({
   user: one(users, { fields: [decks.userId], references: [users.id] }),
   cards: many(cards),
 }))
+
+export type SelectDeck = typeof decks.$inferSelect
 
 export const cards = pgTable(
   "cards",
@@ -72,3 +82,5 @@ export const cards = pgTable(
 export const cardsRelations = relations(cards, ({ one }) => ({
   deck: one(decks, { fields: [cards.deckId], references: [decks.id] }),
 }))
+
+export type SelectCard = typeof cards.$inferSelect
