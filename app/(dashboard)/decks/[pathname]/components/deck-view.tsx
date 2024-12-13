@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { Ellipsis } from "lucide-react"
 import {
   Table,
@@ -22,15 +23,14 @@ import { Button } from "@/app/components/ui/button"
 import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
 import { useCardActions } from "@/app/hooks/use-card-actions"
-import { Card, Deck } from "@/app/db/placeholder-schema"
-import Link from "next/link"
+import { SelectDeck, SelectCard } from "@/app/db/schema"
 
 interface DeckViewProps {
-  deck: Deck
-  cards: Card[]
+  deck: SelectDeck
+  cards: SelectCard[]
 }
 
-export default function DeckView({ deck, cards }: DeckViewProps) {
+export function DeckView({ deck, cards }: DeckViewProps) {
   const [cardActionsState, cardActionsDispatch] = useCardActions({
     mode: "idle",
   })
@@ -43,7 +43,7 @@ export default function DeckView({ deck, cards }: DeckViewProps) {
           <span className="text-xs font-normal">
             (
             <Link
-              href={`/decks/${deck.id}/edit`}
+              href={`/decks/${deck.pathname}/edit`}
               className="cursor-pointer underline-offset-4 hover:underline"
             >
               edit
@@ -64,12 +64,12 @@ export default function DeckView({ deck, cards }: DeckViewProps) {
         <div className="mt-2 flex items-center space-x-3">
           <div>
             lessons per day:{" "}
-            <span className="font-medium">{deck.lessons_per_day}</span>
+            <span className="font-medium">{deck.lessonsPerDay}</span>
           </div>
           <Separator className="h-4" orientation="vertical" />
           <div>
             lessons batch size:{" "}
-            <span className="font-medium">{deck.lessons_batch_size}</span>
+            <span className="font-medium">{deck.lessonsBatchSize}</span>
           </div>
         </div>
       </div>
@@ -102,7 +102,9 @@ export default function DeckView({ deck, cards }: DeckViewProps) {
                 </TableCell>
                 <TableCell className="text-right">{card.level}</TableCell>
                 <TableCell className="text-right">
-                  {card.next_review_date || "n/a"}
+                  {card.nextReviewDate
+                    ? new Date(card.nextReviewDate).toString()
+                    : "n/a"}
                 </TableCell>
                 <TableCell className="flex justify-end">
                   <DropdownMenu>

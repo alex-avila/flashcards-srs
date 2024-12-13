@@ -18,11 +18,11 @@ import { ActionsState, createCard, editCard } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
 import { cardFormSchema } from "@/app/lib/schemas"
 import { useToast } from "@/app/hooks/use-toast"
-import { Card } from "@/app/db/placeholder-schema"
+import { SelectCard } from "@/app/db/schema"
 
 interface FlashcardFormProps {
-  deckId: string
-  card?: Card
+  deckId: number
+  card?: SelectCard
   formId?: string
   onIsPendingUpdate?: (isPending: boolean) => void
   withSubmitButton?: boolean

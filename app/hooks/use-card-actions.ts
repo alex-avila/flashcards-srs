@@ -1,16 +1,16 @@
 import { useReducer } from "react"
-import { Card } from "@/app/db/placeholder-schema"
+import { SelectCard } from "../db/schema"
 
 interface CardActionsState {
-  card?: Card
+  card?: SelectCard
   mode: "create" | "view" | "edit" | "delete" | "idle"
 }
 
 type CardAction =
   | { type: "START_CREATE" }
-  | { type: "VIEW"; card: Card }
-  | { type: "START_EDIT"; card: Card }
-  | { type: "DELETE"; card: Card }
+  | { type: "VIEW"; card: SelectCard }
+  | { type: "START_EDIT"; card: SelectCard }
+  | { type: "DELETE"; card: SelectCard }
   | { type: "RESET" }
 
 function reducer(

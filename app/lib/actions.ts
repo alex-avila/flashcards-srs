@@ -86,7 +86,7 @@ export async function editDeck(
 }
 
 export async function createCard(
-  deckId: string,
+  deckId: number,
   prevState: ActionsState,
   formData: FormData
 ): Promise<ActionsState> | never {
@@ -121,7 +121,7 @@ export async function createCard(
 }
 
 export async function editCard(
-  deckId: string,
+  deckId: number,
   cardId: string,
   prevState: ActionsState,
   formData: FormData

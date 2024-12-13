@@ -22,6 +22,7 @@ export async function fetchDecksForDashboard() {
     .select({
       id: decks.id,
       name: decks.name,
+      pathname: decks.pathname,
       description: decks.description,
       lessonsCount: sql<number>`coalesce(${cardCounts.lessonsCount}, 0)`,
       reviewsCount: sql<number>`coalesce(${cardCounts.reviewsCount}, 0)`,
@@ -31,4 +32,23 @@ export async function fetchDecksForDashboard() {
     .where(eq(decks.userId, firstUser!.id))
 
   return result
+}
+
+export async function fetchDeckWithCards({ pathname }: { pathname: string }) {
+  const firstUser = await db.query.users.findFirst()
+  const deckWithCards = await db.query.decks.findFirst({
+    where: (decks, { and, eq }) =>
+      and(eq(decks.userId, firstUser!.id), eq(decks.pathname, pathname)),
+    with: {
+      cards: true,
+    },
+  })
+
+  if (!deckWithCards) {
+    throw new Error(`Deck with pathname "${pathname}" not found`)
+  }
+
+  const { cards, ...deck } = deckWithCards
+
+  return [deck, cards] as [typeof deck, typeof cards]
 }
