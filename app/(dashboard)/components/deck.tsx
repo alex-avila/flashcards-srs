@@ -13,15 +13,13 @@ interface DeckProps {
 }
 
 export function Deck({ deck }: DeckProps) {
-  // TODO: add actual links to dynamic route segments and stuff
+  const pathnameNormalized = encodeURIComponent(deck.pathname)
+
   return (
     <Card key={deck.name}>
       <CardHeader>
         <CardTitle>
-          <Link
-            href={`/decks/${encodeURIComponent(deck.pathname)}`}
-            className="underline"
-          >
+          <Link href={`/decks/${pathnameNormalized}`} className="underline">
             <h3>{deck.name}</h3>
           </Link>
         </CardTitle>
@@ -32,7 +30,9 @@ export function Deck({ deck }: DeckProps) {
             <div>lessons: {deck.lessonsCount}</div>
             {deck.lessonsCount > 0 ? (
               <Button asChild>
-                <Link href={`/lessons/${deck.id}`}>start lessons</Link>
+                <Link href={`/lessons/${pathnameNormalized}`}>
+                  start lessons
+                </Link>
               </Button>
             ) : (
               <div>no more lessons for today!</div>
@@ -42,7 +42,9 @@ export function Deck({ deck }: DeckProps) {
             <div>reviews: {deck.reviewsCount}</div>
             {deck.reviewsCount > 0 ? (
               <Button asChild>
-                <Link href={`/reviews/${deck.id}`}>start reviews</Link>
+                <Link href={`/reviews/${pathnameNormalized}`}>
+                  start reviews
+                </Link>
               </Button>
             ) : (
               <div>no more reviews to do right now</div>
