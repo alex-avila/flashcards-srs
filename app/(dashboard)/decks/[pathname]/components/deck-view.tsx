@@ -61,7 +61,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
           <span className="text-xs font-normal">
             (
             <Link
-              href={`/decks/${deck.pathname}/edit`}
+              href={`/decks/${encodeURIComponent(deck.pathname)}/edit`}
               className="cursor-pointer underline-offset-4 hover:underline"
             >
               edit
