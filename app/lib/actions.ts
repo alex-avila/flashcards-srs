@@ -5,8 +5,7 @@ import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { eq } from "drizzle-orm"
 import { db } from "@/app/db"
-import { decks, insertDeckSchema, updateDeckSchema } from "@/app/db/schema"
-import { cardFormSchema } from "./schemas"
+import { decks, deckSchema, cardSchema } from "@/app/db/schema"
 import { kebabCase } from "./utils"
 
 const ACTION_MESSAGES = {
@@ -47,21 +46,16 @@ export async function createDeck(
     lessonsPerDay: formData.get("lessonsPerDay"),
     lessonsBatchSize: formData.get("lessonsBatchSize"),
   }
-  const parsed = insertDeckSchema
+  const parsed = deckSchema
     .pick({
       name: true,
       description: true,
       lessonsPerDay: true,
       lessonsBatchSize: true,
     })
-    .safeParse({
-      ...data,
-      lessonsPerDay: Number(data.lessonsPerDay),
-      lessonsBatchSize: Number(data.lessonsBatchSize),
-    })
+    .safeParse(data)
 
   if (!parsed.success) {
-    console.log("parsed errors", parsed.error.issues)
     return {
       message: ACTION_MESSAGES.failedParsing,
       errors: parsed.error.issues.map(issue => issue.message),
@@ -105,11 +99,14 @@ export async function updateDeck(
     lessonsPerDay: formData.get("lessonsPerDay"),
     lessonsBatchSize: formData.get("lessonsBatchSize"),
   }
-  const parsed = updateDeckSchema.safeParse({
-    ...data,
-    lessonsPerDay: Number(data.lessonsPerDay),
-    lessonsBatchSize: Number(data.lessonsBatchSize),
-  })
+  const parsed = deckSchema
+    .pick({
+      name: true,
+      description: true,
+      lessonsPerDay: true,
+      lessonsBatchSize: true,
+    })
+    .safeParse(data)
 
   if (!parsed.success) {
     return {
@@ -173,7 +170,9 @@ export async function createCard(
       back: formData.get("back"),
       context: formData.get("context"),
     }
-    const parsed = cardFormSchema.safeParse(data)
+    const parsed = cardSchema
+      .pick({ front: true, back: true, notes: true })
+      .safeParse(data)
 
     if (!parsed.success) {
       return {
@@ -198,7 +197,7 @@ export async function createCard(
 
 export async function editCard(
   deckId: number,
-  cardId: string,
+  cardId: number,
   prevState: ActionsState,
   formData: FormData
 ): Promise<ActionsState> | never {
@@ -206,9 +205,11 @@ export async function editCard(
     const data = {
       front: formData.get("front"),
       back: formData.get("back"),
-      context: formData.get("context"),
+      notes: formData.get("notes"),
     }
-    const parsed = cardFormSchema.safeParse(data)
+    const parsed = cardSchema
+      .pick({ front: true, back: true, notes: true })
+      .safeParse(data)
 
     if (!parsed.success) {
       return {

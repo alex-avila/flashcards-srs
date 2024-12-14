@@ -38,7 +38,10 @@ export async function fetchDeckWithCards({ pathname }: { pathname: string }) {
   const firstUser = await db.query.users.findFirst()
   const deckWithCards = await db.query.decks.findFirst({
     where: (decks, { and, eq }) =>
-      and(eq(decks.userId, firstUser!.id), eq(decks.pathname, pathname)),
+      and(
+        eq(decks.userId, firstUser!.id),
+        eq(decks.pathname, decodeURIComponent(pathname))
+      ),
     with: {
       cards: true,
     },
@@ -57,7 +60,10 @@ export async function fetchDeck({ pathname }: { pathname: string }) {
   const firstUser = await db.query.users.findFirst()
   const deck = await db.query.decks.findFirst({
     where: (decks, { and, eq }) =>
-      and(eq(decks.userId, firstUser!.id), eq(decks.pathname, pathname)),
+      and(
+        eq(decks.userId, firstUser!.id),
+        eq(decks.pathname, decodeURIComponent(pathname))
+      ),
   })
 
   if (!deck) {

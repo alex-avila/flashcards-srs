@@ -29,7 +29,7 @@ import {
   deleteDeck,
   updateDeck,
 } from "@/app/lib/actions"
-import { SelectDeck, updateDeckSchema } from "@/app/db/schema"
+import { SelectDeck, deckSchema } from "@/app/db/schema"
 
 interface DeckFormProps {
   deck?: SelectDeck
@@ -57,8 +57,8 @@ export function DeckForm({
     }),
     [deck]
   )
-  const form = useForm<z.infer<typeof updateDeckSchema>>({
-    resolver: zodResolver(updateDeckSchema),
+  const form = useForm<z.infer<typeof deckSchema>>({
+    resolver: zodResolver(deckSchema),
     defaultValues: formDefaultValues,
   })
 

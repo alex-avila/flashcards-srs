@@ -8,7 +8,6 @@ import {
   unique,
 } from "drizzle-orm/pg-core"
 import { z } from "zod"
-import { createInsertSchema, createUpdateSchema } from "drizzle-zod"
 
 export const users = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -32,8 +31,8 @@ export const decks = pgTable(
     name: varchar({ length: 60 }).notNull(),
     pathname: varchar().notNull(),
     description: varchar(),
-    lessonsPerDay: integer("lessons_per_day").default(15),
-    lessonsBatchSize: integer("lessons_batch_size").default(5),
+    lessonsPerDay: integer("lessons_per_day").default(15).notNull(),
+    lessonsBatchSize: integer("lessons_batch_size").default(5).notNull(),
   },
   table => [
     {
@@ -60,13 +59,14 @@ export const decksRelations = relations(decks, ({ one, many }) => ({
 
 export type SelectDeck = typeof decks.$inferSelect
 
-export const insertDeckSchema = createInsertSchema(decks)
-export const updateDeckSchema = createUpdateSchema(decks, {
-  name: z.string().min(1),
+export const deckSchema = z.object({
+  userId: z.number(),
+  name: z.string().min(1).max(60),
+  pathname: z.string(),
   description: z.string().optional(),
-  lessonsPerDay: z.preprocess(val => Number(val), z.number().min(1).max(100)),
-  lessonsBatchSize: z.preprocess(val => Number(val), z.number().min(3).max(10)),
-}).omit({ userId: true, pathname: true })
+  lessonsPerDay: z.coerce.number().min(1).max(100),
+  lessonsBatchSize: z.coerce.number().min(3).max(10),
+})
 
 export const cards = pgTable(
   "cards",
@@ -96,3 +96,14 @@ export const cardsRelations = relations(cards, ({ one }) => ({
 }))
 
 export type SelectCard = typeof cards.$inferSelect
+
+export const cardSchema = z.object({
+  deckId: z.number(),
+  front: z.string().min(1).max(55),
+  back: z.string().min(1).max(55),
+  notes: z.string().optional(),
+  level: z.number().min(0),
+  learnedDate: z.date(),
+  nextReviewDate: z.date(),
+  lastCorrectDate: z.date(),
+})

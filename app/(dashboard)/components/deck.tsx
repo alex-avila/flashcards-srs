@@ -18,7 +18,10 @@ export function Deck({ deck }: DeckProps) {
     <Card key={deck.name}>
       <CardHeader>
         <CardTitle>
-          <Link href={`/decks/${deck.pathname}`} className="underline">
+          <Link
+            href={`/decks/${encodeURIComponent(deck.pathname)}`}
+            className="underline"
+          >
             <h3>{deck.name}</h3>
           </Link>
         </CardTitle>

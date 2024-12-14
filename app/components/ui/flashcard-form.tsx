@@ -16,9 +16,8 @@ import { Input } from "@/app/components/ui/input"
 import { Button } from "@/app/components/ui/button"
 import { ActionsState, createCard, editCard } from "@/app/lib/actions"
 // TODO: reconsider the location of formSchema
-import { cardFormSchema } from "@/app/lib/schemas"
 import { useToast } from "@/app/hooks/use-toast"
-import { SelectCard } from "@/app/db/schema"
+import { SelectCard, cardSchema } from "@/app/db/schema"
 
 interface FlashcardFormProps {
   deckId: number
@@ -44,12 +43,12 @@ export function FlashcardForm({
     () => ({
       front: card?.front || "",
       back: card?.back || "",
-      context: card?.context || "",
+      notes: card?.notes || "",
     }),
     [card]
   )
-  const form = useForm<z.infer<typeof cardFormSchema>>({
-    resolver: zodResolver(cardFormSchema),
+  const form = useForm<z.infer<typeof cardSchema>>({
+    resolver: zodResolver(cardSchema),
     defaultValues: formDefaultValues,
   })
 
@@ -138,7 +137,7 @@ export function FlashcardForm({
         />
         <FormField
           control={form.control}
-          name="context"
+          name="notes"
           render={({ field }) => (
             <FormItem>
               <FormLabel>
