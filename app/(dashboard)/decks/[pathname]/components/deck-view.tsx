@@ -1,6 +1,8 @@
 "use client"
 
 import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { useState } from "react"
 import { Ellipsis } from "lucide-react"
 import {
   Table,
@@ -18,12 +20,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/app/components/ui/dialog"
 import { Separator } from "@/app/components/ui/separator"
 import { Button } from "@/app/components/ui/button"
 import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
-import { useCardActions } from "@/app/hooks/use-card-actions"
 import { SelectDeck, SelectCard } from "@/app/db/schema"
+import { deleteCard } from "@/app/lib/actions"
+
+enum Mode {
+  CREATE = "create",
+  VIEW = "view",
+  EDIT = "edit",
+  DELETE = "delete",
+  IDLE = "idle",
+}
 
 interface DeckViewProps {
   deck: SelectDeck
@@ -31,9 +48,10 @@ interface DeckViewProps {
 }
 
 export function DeckView({ deck, cards }: DeckViewProps) {
-  const [cardActionsState, cardActionsDispatch] = useCardActions({
-    mode: "idle",
-  })
+  const pathname = usePathname()
+  const [mode, setMode] = useState<Mode>(Mode.IDLE)
+  const [activeCardIndex, setActiveCardIndex] = useState<number | undefined>()
+  const activeCard = activeCardIndex ? cards[activeCardIndex] : undefined
 
   return (
     <div>
@@ -51,10 +69,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
             )
           </span>
         </h2>
-        <Button
-          variant="link"
-          onClick={() => cardActionsDispatch({ type: "START_CREATE" })}
-        >
+        <Button variant="link" onClick={() => setMode(Mode.CREATE)}>
           + new card
         </Button>
       </div>
@@ -92,7 +107,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cards.map(card => (
+            {cards.map((card, index) => (
               <TableRow key={card.id}>
                 <TableCell className="max-w-28 overflow-x-hidden text-ellipsis whitespace-nowrap font-medium">
                   {card.front}
@@ -115,24 +130,27 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem
-                        onClick={() =>
-                          cardActionsDispatch({ card, type: "VIEW" })
-                        }
+                        onClick={() => {
+                          setMode(Mode.VIEW)
+                          setActiveCardIndex(index)
+                        }}
                       >
                         view
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() =>
-                          cardActionsDispatch({ card, type: "START_EDIT" })
-                        }
+                        onClick={() => {
+                          setMode(Mode.EDIT)
+                          setActiveCardIndex(index)
+                        }}
                       >
                         edit
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        onClick={() =>
-                          cardActionsDispatch({ card, type: "DELETE" })
-                        }
+                        onClick={() => {
+                          setMode(Mode.DELETE)
+                          setActiveCardIndex(index)
+                        }}
                       >
                         delete
                       </DropdownMenuItem>
@@ -145,14 +163,22 @@ export function DeckView({ deck, cards }: DeckViewProps) {
         </Table>
 
         <FlashcardDialog
-          card={cardActionsState.card}
-          open={cardActionsState.mode === "view"}
-          onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
+          card={activeCard}
+          open={mode === Mode.VIEW}
+          onOpenChange={open => {
+            if (!open) {
+              setMode(Mode.IDLE)
+            }
+          }}
         />
         <FlashcardSheet
           deckId={deck.id}
-          open={cardActionsState.mode === "create"}
-          onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
+          open={mode === Mode.CREATE}
+          onOpenChange={open => {
+            if (!open) {
+              setMode(Mode.IDLE)
+            }
+          }}
           title="create a new card"
           description="enter new card details and submit to add to the deck"
           submitLabel="create"
@@ -161,14 +187,55 @@ export function DeckView({ deck, cards }: DeckViewProps) {
         {/* TODO: make sure edit sheet is closed after successfully editing */}
         <FlashcardSheet
           deckId={deck.id}
-          card={cardActionsState.card}
-          open={cardActionsState.mode === "edit"}
-          onOpenChange={open => !open && cardActionsDispatch({ type: "RESET" })}
+          card={activeCard}
+          open={mode === Mode.EDIT}
+          onOpenChange={open => {
+            if (!open) {
+              setMode(Mode.IDLE)
+            }
+          }}
           title="edit"
           description="edit card details and submit to update"
           submitLabel="update"
           submitPendingLabel="updating…"
         />
+        <Dialog
+          open={mode === Mode.DELETE}
+          onOpenChange={open => {
+            if (!open) {
+              setMode(Mode.IDLE)
+            }
+          }}
+        >
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>delete card</DialogTitle>
+              <DialogDescription>
+                are you sure you want to delete this card?
+                {
+                  <>
+                    <span>{": "}</span>
+                    <span className="font-medium">{activeCard?.front}</span>
+                  </>
+                }
+              </DialogDescription>
+              <div className="mx-auto flex gap-2 pt-2">
+                <Button onClick={() => setMode(Mode.IDLE)}>cancel</Button>
+                <Button
+                  variant="destructive"
+                  onClick={async () => {
+                    if (activeCard?.id) {
+                      await deleteCard(activeCard.id, pathname)
+                      setMode(Mode.IDLE)
+                    }
+                  }}
+                >
+                  delete
+                </Button>
+              </div>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

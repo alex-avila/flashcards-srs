@@ -5,7 +5,7 @@ import { redirect } from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { eq } from "drizzle-orm"
 import { db } from "@/app/db"
-import { decks, deckSchema, cardSchema } from "@/app/db/schema"
+import { decks, cards, deckSchema, cardSchema } from "@/app/db/schema"
 import { kebabCase } from "./utils"
 
 const ACTION_MESSAGES = {
@@ -160,68 +160,99 @@ export async function deleteDeck({
 
 export async function createCard(
   deckId: number,
+  deckPathname: string,
   prevState: ActionsState,
   formData: FormData
 ): Promise<ActionsState> | never {
-  try {
-    const data = {
-      deck_id: deckId,
-      front: formData.get("front"),
-      back: formData.get("back"),
-      context: formData.get("context"),
-    }
-    const parsed = cardSchema
-      .pick({ front: true, back: true, notes: true })
-      .safeParse(data)
+  const data = {
+    front: formData.get("front"),
+    back: formData.get("back"),
+    context: formData.get("context"),
+  }
+  const parsed = cardSchema
+    .pick({ front: true, back: true, notes: true })
+    .safeParse(data)
 
-    if (!parsed.success) {
-      return {
-        message: ACTION_MESSAGES.failedParsing,
-        errors: parsed.error.issues.map(issue => issue.message),
-      }
-    }
-
-    revalidatePath(`/decks/${deckId}`)
-
+  if (!parsed.success) {
     return {
-      message: ACTION_MESSAGES.success,
-      success: true,
+      message: ACTION_MESSAGES.failedParsing,
+      errors: parsed.error.issues.map(issue => issue.message),
     }
+  }
+
+  try {
+    const values: typeof cards.$inferInsert = {
+      ...parsed.data,
+      deckId,
+    }
+
+    await db.insert(cards).values(values)
   } catch (error) {
     console.error(error) // this would be logged to something like Sentry
     return {
       message: ACTION_MESSAGES.unexpected,
+      ...(error instanceof Error && { errors: [error.message] }),
     }
+  }
+
+  revalidatePath(`/decks/${deckPathname}`)
+
+  return {
+    message: ACTION_MESSAGES.success,
+    success: true,
   }
 }
 
 export async function editCard(
   deckId: number,
+  deckPathname: string,
   cardId: number,
   prevState: ActionsState,
   formData: FormData
 ): Promise<ActionsState> | never {
+  const data = {
+    front: formData.get("front"),
+    back: formData.get("back"),
+    context: formData.get("context"),
+  }
+  const parsed = cardSchema
+    .pick({ front: true, back: true, notes: true })
+    .safeParse(data)
+
+  if (!parsed.success) {
+    return {
+      message: ACTION_MESSAGES.failedParsing,
+      errors: parsed.error.issues.map(issue => issue.message),
+    }
+  }
+
   try {
-    const data = {
-      front: formData.get("front"),
-      back: formData.get("back"),
-      notes: formData.get("notes"),
-    }
-    const parsed = cardSchema
-      .pick({ front: true, back: true, notes: true })
-      .safeParse(data)
-
-    if (!parsed.success) {
-      return {
-        message: ACTION_MESSAGES.failedParsing,
-        errors: parsed.error.issues.map(issue => issue.message),
-      }
+    const values: typeof cards.$inferInsert = {
+      ...parsed.data,
+      deckId,
     }
 
-    // update card with cardId && deckId
+    await db.update(cards).set(values).where(eq(cards.id, cardId))
+  } catch (error) {
+    console.error(error) // this would be logged to something like Sentry
+    return {
+      message: ACTION_MESSAGES.unexpected,
+      ...(error instanceof Error && { errors: [error.message] }),
+    }
+  }
 
-    revalidatePath(`/decks/${deckId}`)
+  revalidatePath(`/decks/${deckPathname}`)
 
+  return {
+    message: ACTION_MESSAGES.success,
+    success: true,
+  }
+}
+
+export async function deleteCard(cardId: number, deckPathname: string) {
+  try {
+    await db.delete(cards).where(eq(cards.id, cardId))
+    revalidatePath(`/decks/${deckPathname}`)
     return {
       message: ACTION_MESSAGES.success,
       success: true,
@@ -230,6 +261,7 @@ export async function editCard(
     console.error(error) // this would be logged to something like Sentry
     return {
       message: ACTION_MESSAGES.unexpected,
+      ...(error instanceof Error && { errors: [error.message] }),
     }
   }
 }

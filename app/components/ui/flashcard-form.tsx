@@ -1,3 +1,4 @@
+import { usePathname } from "next/navigation"
 import { useActionState, useEffect, Fragment, useMemo } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -15,7 +16,6 @@ import {
 import { Input } from "@/app/components/ui/input"
 import { Button } from "@/app/components/ui/button"
 import { ActionsState, createCard, editCard } from "@/app/lib/actions"
-// TODO: reconsider the location of formSchema
 import { useToast } from "@/app/hooks/use-toast"
 import { SelectCard, cardSchema } from "@/app/db/schema"
 
@@ -52,9 +52,11 @@ export function FlashcardForm({
     defaultValues: formDefaultValues,
   })
 
+  const pathname = usePathname()
+
   const action = card
-    ? editCard.bind(null, deckId, card.id)
-    : createCard.bind(null, deckId)
+    ? editCard.bind(null, deckId, pathname, card.id)
+    : createCard.bind(null, deckId, pathname)
   const [state, formAction, isPending] = useActionState(action, {
     message: "",
   } as ActionsState)
@@ -72,17 +74,19 @@ export function FlashcardForm({
       const { dismiss } = toast({
         description: (
           <div>
-            <strong>{form.getValues("front")}</strong> card created
+            <strong>{form.getValues("front")}</strong> card{" "}
+            {card ? "edited" : "created"}
           </div>
         ),
       })
 
       setTimeout(dismiss, 5000)
 
-      form.setFocus("front")
-      form.reset(formDefaultValues)
+      // TODO: keep form open when adding a card so when 'card' isn't provided in props
+      // form.setFocus("front")
+      // form.reset(formDefaultValues)
     }
-  }, [state, toast, form, formDefaultValues])
+  }, [card, state, toast, form, formDefaultValues])
 
   const BottomWrapper = useMemo(
     () => (withSubmitButton ? "div" : Fragment),
