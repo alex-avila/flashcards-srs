@@ -52,3 +52,17 @@ export async function fetchDeckWithCards({ pathname }: { pathname: string }) {
 
   return [deck, cards] as [typeof deck, typeof cards]
 }
+
+export async function fetchDeck({ pathname }: { pathname: string }) {
+  const firstUser = await db.query.users.findFirst()
+  const deck = await db.query.decks.findFirst({
+    where: (decks, { and, eq }) =>
+      and(eq(decks.userId, firstUser!.id), eq(decks.pathname, pathname)),
+  })
+
+  if (!deck) {
+    throw new Error(`Deck with pathname "${pathname}" not found`)
+  }
+
+  return deck
+}

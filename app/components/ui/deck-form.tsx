@@ -22,15 +22,22 @@ import {
   SelectValue,
 } from "@/app/components/ui/select"
 import { Input } from "@/app/components/ui/input"
-import { createDeck, editDeck, ActionsState } from "@/app/lib/actions"
-// TODO: reconsider the location of formSchema
-import { formSchema } from "@/app/lib/schemas"
 import { Button } from "@/app/components/ui/button"
-import { Deck } from "@/app/db/placeholder-schema"
+import {
+  ActionsState,
+  createDeck,
+  deleteDeck,
+  updateDeck,
+} from "@/app/lib/actions"
+import { SelectDeck, updateDeckSchema } from "@/app/db/schema"
 
-const initialState: ActionsState = { message: "" }
-
-// TODO: make this more generic to support editing a deck, not just creating one
+interface DeckFormProps {
+  deck?: SelectDeck
+  submitLabel?: string
+  submitPendingLabel?: string
+  deleteLabel?: string
+  deletePendingLabel?: string
+}
 
 // source: https://github.com/react-hook-form/react-hook-form/issues/10391
 // this form creates a new deck and redirects to the deck page in which the user can create cards
@@ -38,27 +45,27 @@ export function DeckForm({
   deck,
   submitLabel = "submit",
   submitPendingLabel = "submitting…",
-}: {
-  deck?: Deck
-  submitLabel: string
-  submitPendingLabel: string
-}) {
+  deleteLabel = "delete",
+  deletePendingLabel = "deleting…",
+}: DeckFormProps) {
   const formDefaultValues = useMemo(
     () => ({
       name: deck?.name || "",
       description: deck?.description || "",
-      lessonsPerDay: deck?.lessons_per_day || 15,
-      lessonsBatchSize: deck?.lessons_batch_size || 5,
+      lessonsPerDay: deck?.lessonsPerDay || 15,
+      lessonsBatchSize: deck?.lessonsBatchSize || 5,
     }),
     [deck]
   )
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof updateDeckSchema>>({
+    resolver: zodResolver(updateDeckSchema),
     defaultValues: formDefaultValues,
   })
 
-  const action = deck ? editDeck.bind(null, deck.id) : createDeck
-  const [state, formAction, isPending] = useActionState(action, initialState)
+  const action = deck ? updateDeck.bind(null, deck.id) : createDeck
+  const [state, formAction, isPending] = useActionState(action, {
+    message: "",
+  } as ActionsState)
 
   // TODO: show parsed errors that happen in the createDeck action due to failing parsing
 
@@ -168,10 +175,21 @@ export function DeckForm({
               )}
             </div>
           )}
-          <Button type="submit" disabled={isPending}>
-            {!isPending ? submitLabel : submitPendingLabel}
-          </Button>
-          {/* TODO: add a delete button */}
+          <div className="flex gap-2">
+            <Button type="submit" disabled={isPending}>
+              {!isPending ? submitLabel : submitPendingLabel}
+            </Button>
+            {deck && (
+              <Button
+                type="button"
+                variant="destructive"
+                disabled={isPending}
+                onClick={() => deleteDeck({ deckId: deck.id })}
+              >
+                {!isPending ? deleteLabel : deletePendingLabel}
+              </Button>
+            )}
+          </div>
         </div>
       </form>
     </Form>

@@ -3,7 +3,11 @@
 import { redirect } from "next/navigation"
 // TODO: figure out if revalidatePath is strictly necessary
 import { revalidatePath } from "next/cache"
-import { cardFormSchema, formSchema } from "./schemas"
+import { eq } from "drizzle-orm"
+import { db } from "@/app/db"
+import { decks, insertDeckSchema, updateDeckSchema } from "@/app/db/schema"
+import { cardFormSchema } from "./schemas"
+import { kebabCase } from "./utils"
 
 const ACTION_MESSAGES = {
   success: "success",
@@ -17,60 +21,117 @@ export type ActionsState = {
   errors?: string[]
 }
 
+function handleRedirect(
+  type: "create_deck" | "edit_deck" | "delete_deck",
+  redirectPath: string
+): never {
+  revalidatePath("/")
+
+  if (type === "edit_deck") {
+    revalidatePath(redirectPath)
+  }
+
+  // redirect internally throws an error so it needs to be outside of catch block
+  redirect(redirectPath)
+}
+
 export async function createDeck(
   prevState: ActionsState,
   formData: FormData
 ): Promise<ActionsState> | never {
-  try {
-    const data = {
-      name: formData.get("name"),
-      description: formData.get("description"),
-      lessonsPerDay: formData.get("lessonsPerDay"),
-      lessonsBatchSize: formData.get("lessonsBatchSize"),
-    }
-    const parsed = formSchema.safeParse(data)
+  let insertedPathname: string | null = null
 
-    if (!parsed.success) {
-      return {
-        message: ACTION_MESSAGES.failedParsing,
-        errors: parsed.error.issues.map(issue => issue.message),
-      }
+  const data = {
+    name: formData.get("name"),
+    description: formData.get("description"),
+    lessonsPerDay: formData.get("lessonsPerDay"),
+    lessonsBatchSize: formData.get("lessonsBatchSize"),
+  }
+  const parsed = insertDeckSchema
+    .pick({
+      name: true,
+      description: true,
+      lessonsPerDay: true,
+      lessonsBatchSize: true,
+    })
+    .safeParse({
+      ...data,
+      lessonsPerDay: Number(data.lessonsPerDay),
+      lessonsBatchSize: Number(data.lessonsBatchSize),
+    })
+
+  if (!parsed.success) {
+    console.log("parsed errors", parsed.error.issues)
+    return {
+      message: ACTION_MESSAGES.failedParsing,
+      errors: parsed.error.issues.map(issue => issue.message),
     }
+  }
+
+  try {
+    // TODO: get rid of this query after implementing auth
+    const firstUser = await db.query.users.findFirst()
+    const values: typeof decks.$inferInsert = {
+      ...parsed.data,
+      userId: firstUser!.id,
+      pathname: kebabCase(parsed.data.name),
+    }
+
+    ;[{ insertedPathname }] = await db
+      .insert(decks)
+      .values(values)
+      .returning({ insertedPathname: decks.pathname })
   } catch (error) {
     console.error(error) // this would be logged to something like Sentry
     return {
       message: ACTION_MESSAGES.unexpected,
+      ...(error instanceof Error && { errors: [error.message] }),
     }
   }
 
-  // TODO: connect to database and use real id
-  const id = "deck-001"
-
-  // redirect internally throws an error so it needs to be outside of catch block
-  revalidatePath("/decks")
-  redirect(`/decks/${id}`)
+  handleRedirect("create_deck", `/decks/${insertedPathname}`)
 }
 
-export async function editDeck(
-  deckId: string,
+export async function updateDeck(
+  deckId: number,
   prevState: ActionsState,
   formData: FormData
 ): Promise<ActionsState> | never {
-  try {
-    const data = {
-      name: formData.get("name"),
-      description: formData.get("description"),
-      lessonsPerDay: formData.get("lessonsPerDay"),
-      lessonsBatchSize: formData.get("lessonsBatchSize"),
-    }
-    const parsed = formSchema.safeParse(data)
+  let updatedPathname: string | null = null
 
-    if (!parsed.success) {
-      return {
-        message: ACTION_MESSAGES.failedParsing,
-        errors: parsed.error.issues.map(issue => issue.message),
-      }
+  const data = {
+    name: formData.get("name"),
+    description: formData.get("description"),
+    lessonsPerDay: formData.get("lessonsPerDay"),
+    lessonsBatchSize: formData.get("lessonsBatchSize"),
+  }
+  const parsed = updateDeckSchema.safeParse({
+    ...data,
+    lessonsPerDay: Number(data.lessonsPerDay),
+    lessonsBatchSize: Number(data.lessonsBatchSize),
+  })
+
+  if (!parsed.success) {
+    return {
+      message: ACTION_MESSAGES.failedParsing,
+      errors: parsed.error.issues.map(issue => issue.message),
     }
+  }
+
+  try {
+    // TODO: get rid of this query after implementing auth
+    const firstUser = await db.query.users.findFirst()
+    const values: typeof decks.$inferInsert = {
+      ...parsed.data,
+      userId: firstUser!.id,
+      pathname: kebabCase(parsed.data.name),
+    }
+
+    ;[{ updatedPathname }] = await db
+      .update(decks)
+      .set(values)
+      .where(eq(decks.id, deckId))
+      .returning({ updatedPathname: decks.pathname })
   } catch (error) {
     console.error(error) // this would be logged to something like Sentry
     return {
@@ -78,11 +139,26 @@ export async function editDeck(
     }
   }
 
-  // TODO: connect to database and use deckId
-  //
   // redirect internally throws an error so it needs to be outside of catch block
-  revalidatePath("/decks")
-  redirect(`/decks/${deckId}`)
+  handleRedirect("edit_deck", `/decks/${updatedPathname}`)
+}
+
+export async function deleteDeck({
+  deckId,
+}: {
+  deckId: number
+}): Promise<ActionsState> | never {
+  try {
+    await db.delete(decks).where(eq(decks.id, deckId))
+  } catch (error) {
+    return {
+      message: "Database error: Failed to delete deck",
+      // TODO: check what an error from drizzle looks like and if the next line works
+      ...(error instanceof Error && { errors: [error.message] }),
+    }
+  }
+
+  handleRedirect("delete_deck", "/")
 }
 
 export async function createCard(

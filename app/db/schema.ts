@@ -7,6 +7,8 @@ import {
   timestamp,
   unique,
 } from "drizzle-orm/pg-core"
+import { z } from "zod"
+import { createInsertSchema, createUpdateSchema } from "drizzle-zod"
 
 export const users = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -24,9 +26,11 @@ export const decks = pgTable(
   "decks",
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    userId: integer("user_id").references(() => users.id),
+    userId: integer("user_id")
+      .references(() => users.id)
+      .notNull(),
     name: varchar({ length: 60 }).notNull(),
-    pathname: varchar(),
+    pathname: varchar().notNull(),
     description: varchar(),
     lessonsPerDay: integer("lessons_per_day").default(15),
     lessonsBatchSize: integer("lessons_batch_size").default(5),
@@ -55,6 +59,14 @@ export const decksRelations = relations(decks, ({ one, many }) => ({
 }))
 
 export type SelectDeck = typeof decks.$inferSelect
+
+export const insertDeckSchema = createInsertSchema(decks)
+export const updateDeckSchema = createUpdateSchema(decks, {
+  name: z.string().min(1),
+  description: z.string().optional(),
+  lessonsPerDay: z.preprocess(val => Number(val), z.number().min(1).max(100)),
+  lessonsBatchSize: z.preprocess(val => Number(val), z.number().min(3).max(10)),
+}).omit({ userId: true, pathname: true })
 
 export const cards = pgTable(
   "cards",
