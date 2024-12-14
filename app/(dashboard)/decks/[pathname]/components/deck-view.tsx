@@ -51,7 +51,8 @@ export function DeckView({ deck, cards }: DeckViewProps) {
   const pathname = usePathname()
   const [mode, setMode] = useState<Mode>(Mode.IDLE)
   const [activeCardIndex, setActiveCardIndex] = useState<number | undefined>()
-  const activeCard = activeCardIndex ? cards[activeCardIndex] : undefined
+  const activeCard =
+    activeCardIndex !== undefined ? cards[activeCardIndex] : undefined
 
   return (
     <div>
