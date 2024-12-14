@@ -75,7 +75,7 @@ export const cards = pgTable(
     deckId: integer("deck_id").references(() => decks.id),
     front: varchar({ length: 55 }).notNull(),
     back: varchar({ length: 55 }).notNull(),
-    notes: varchar().notNull(),
+    notes: varchar(),
     level: integer().default(0),
     learnedDate: timestamp("learned_date", { mode: "date" }),
     // TODO: maybe update nextReviewDate with $onUpdate so that the database takes care of the srs kinda implicitly
