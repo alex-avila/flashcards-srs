@@ -1,7 +1,8 @@
 "use client"
 
+import Link from "next/link"
 import { useState, useMemo } from "react"
-import { Card } from "@/app/db/placeholder-schema"
+
 import {
   Dialog,
   DialogContent,
@@ -9,20 +10,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog"
+import { Button } from "@/app/components/ui/button"
 import { LessonsSession } from "./lessons-session"
 import { ReviewSession } from "./review-session"
-import { Button } from "@/app/components/ui/button"
-import Link from "next/link"
-
-// for each deck make sure to only allow users to learn however many cards are specified in deck settings
-// for each deck
-// - check how many cards are left to learn today (learnLimit - cardsLearnedToday [card.learned_date])
-// - if there are cards to review, randomize cards
-// - create a batches based on the batchSize
-// set to "learn" mode (will switch to "review" mode after)
-// Give batch to SessionView or "learn" version of SessionView
-// "Finish!" button switches to review mode (cards shuffled)
-// After review show modal with option to go home or start next batch if possible
+import { SelectCard } from "@/app/db/schema"
 
 enum Mode {
   LEARN = "learn",
@@ -31,9 +22,9 @@ enum Mode {
 }
 
 interface LessonsViewProps {
-  deckId: string
+  deckId: number
   lessonsBatchSize: number
-  cardsToLearn: Card[]
+  cardsToLearn: SelectCard[]
 }
 
 export function LessonsView({
@@ -46,7 +37,7 @@ export function LessonsView({
   // NOTE: using a generator function to practice how that would work in React, unlikely to use it in production
   const batches = useMemo(
     () =>
-      cardsToLearn.reduce<Card[][]>((batches, card, index) => {
+      cardsToLearn.reduce<SelectCard[][]>((batches, card, index) => {
         const batchIndex = Math.floor(index / lessonsBatchSize)
         if (!batches[batchIndex]) batches[batchIndex] = []
         batches[batchIndex].push(card)

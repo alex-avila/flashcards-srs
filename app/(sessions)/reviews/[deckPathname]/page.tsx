@@ -2,7 +2,7 @@ import { decks, cards } from "@/app/db/placeholder"
 import { ReviewView } from "../../components/review-view"
 
 interface ReviewsPageProps {
-  params: Promise<{ deckId: string }>
+  params: Promise<{ deckPathname: string }>
 }
 
 export default async function ReviewsPage({ params }: ReviewsPageProps) {
@@ -16,7 +16,7 @@ export default async function ReviewsPage({ params }: ReviewsPageProps) {
   // ...when determining if the current session is done)
 
   // 1. TODO: query due cards for current deck from server also in random order
-  const id = (await params).deckId
+  const id = (await params).deckPathname
   const deck = decks.find(deck => deck.id === id)
   // TODO: handle scenario in which deck isn't found based on id param
   if (!deck) {

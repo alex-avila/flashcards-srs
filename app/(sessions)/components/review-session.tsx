@@ -1,32 +1,29 @@
 import { useState, useMemo, useRef } from "react"
 import { clsx } from "clsx"
-import { Card } from "@/app/db/placeholder-schema"
 import { Flashcard } from "@/app/components/ui/flashcard"
 import { Progress } from "@/app/components/ui/progress"
 import { Input } from "@/app/components/ui/input"
 import { Button } from "@/app/components/ui/button"
 import { useSessionState } from "@/app/hooks/use-session-state"
+import { SelectCard } from "@/app/db/schema"
 
-type CardAndIndex = [Card, number]
-function* cardsGenerator(cards: Card[]): Generator<CardAndIndex, void> {
+type CardAndIndex = [SelectCard, number]
+function* cardsGenerator(cards: SelectCard[]): Generator<CardAndIndex, void> {
   for (let i = 0; i < cards.length; i++) {
     yield [cards[i], i]
   }
 }
 
-function useCardSequence(cards: Card[]) {
+function useCardSequence(cards: SelectCard[]) {
   // NOTE: unnecessary use of a generator function, but it works and I wanted to practice it
   const initialCard = useRef<CardAndIndex | null>(null)
   const getNextCard = useMemo(() => {
-    console.log("getNextCard memo")
-    // console.log("cards", cards)
     // NOTE: this should never rerun b/c 'cards' shouldn't change,
     // ...but if they changed, currentCard should be set to initialCard again
     const gen = cardsGenerator(cards)
     initialCard.current = gen.next().value!
     return () => {
       const nextCard = gen.next().value
-      // console.log("gen:nextCard", nextCard)
       return nextCard
     }
   }, [cards])
@@ -35,8 +32,8 @@ function useCardSequence(cards: Card[]) {
 }
 
 interface SessionViewProps {
-  deckId: string
-  cards: Card[]
+  deckId: number
+  cards: SelectCard[]
   onEnd: () => void
 }
 

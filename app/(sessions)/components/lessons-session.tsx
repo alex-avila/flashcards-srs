@@ -1,12 +1,12 @@
 import { useState } from "react"
-import { Card } from "@/app/db/placeholder-schema"
 import { Flashcard } from "@/app/components/ui/flashcard"
 import { Progress } from "@/app/components/ui/progress"
 import { Button } from "@/app/components/ui/button"
+import { SelectCard } from "@/app/db/schema"
 
 interface SessionViewProps {
-  deckId: string
-  cards: Card[]
+  deckId: number
+  cards: SelectCard[]
   onEnd: () => void
 }
 
