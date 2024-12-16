@@ -12,19 +12,29 @@ export async function fetchDecksForDashboard() {
         "lessons_count"
       ),
       reviewsCount: count(
-        sql`case when ${cards.nextReviewDate} is not null and ${cards.nextReviewDate} <= current_timestamp then 1 end`
+        sql`case when ${cards.nextReviewDate} is not null and ${cards.nextReviewDate} <= timezone('UTC', now()) then 1 end`
       ).as("reviews_count"),
+      learnedTodayCount: count(
+        sql`
+          case when ${cards.learnedDate} is not null
+          and ${cards.learnedDate} >= date_trunc('day', now(), 'America/New_York')
+          and ${cards.learnedDate} < date_trunc('day', now() + interval '1 day', 'America/New_York')
+          then 1 end
+        `
+      ).as("learned_today_count"),
     })
     .from(cards)
     .groupBy(cards.deckId)
     .as("cards_count")
+  // TODO: consider using 'with update clause' mentioned in drizzle's docs to remove repetition in select
+  // - source: https://orm.drizzle.team/docs/update#with-update-clause
   const result = await db
     .select({
       id: decks.id,
       name: decks.name,
       pathname: decks.pathname,
       description: decks.description,
-      lessonsCount: sql<number>`coalesce(${cardCounts.lessonsCount}, 0)`,
+      lessonsCount: sql<number>`greatest(least((${decks.lessonsPerDay} - ${cardCounts.learnedTodayCount}), ${cardCounts.lessonsCount}), 0)`,
       reviewsCount: sql<number>`coalesce(${cardCounts.reviewsCount}, 0)`,
     })
     .from(decks)
