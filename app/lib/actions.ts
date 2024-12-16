@@ -3,10 +3,17 @@
 import { redirect } from "next/navigation"
 // TODO: figure out if revalidatePath is strictly necessary
 import { revalidatePath } from "next/cache"
-import { eq } from "drizzle-orm"
+import { eq, sql, or } from "drizzle-orm"
 import { db } from "@/app/db"
-import { decks, cards, deckSchema, cardSchema } from "@/app/db/schema"
+import {
+  decks,
+  cards,
+  deckSchema,
+  cardSchema,
+  SelectCard,
+} from "@/app/db/schema"
 import { kebabCase } from "./utils"
+import { calculateSrsLevel, getSrsTiming } from "./utils/srs"
 
 const ACTION_MESSAGES = {
   success: "success",
@@ -264,4 +271,22 @@ export async function deleteCard(cardId: number, deckPathname: string) {
       ...(error instanceof Error && { errors: [error.message] }),
     }
   }
+}
+
+export async function setLearnedCards(learnedCards: SelectCard[]) {
+  const srsTiming = getSrsTiming(0)
+  const updates = {
+    level: 1,
+    learnedDate: sql`timezone('UTC', now())`,
+    nextReviewDate: new Date(new Date().getTime() + srsTiming),
+  }
+
+  await db
+    .update(cards)
+    .set(updates)
+    .where(
+      learnedCards.length > 1
+        ? or(...learnedCards.map(c => eq(cards.id, c.id)))
+        : eq(cards.id, learnedCards[0].id)
+    )
 }

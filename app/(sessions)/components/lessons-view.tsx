@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { useState, useMemo } from "react"
+import { useState, useMemo, useTransition } from "react"
 
 import {
   Dialog,
@@ -12,8 +12,9 @@ import {
 } from "@/app/components/ui/dialog"
 import { Button } from "@/app/components/ui/button"
 import { LessonsSession } from "./lessons-session"
-import { ReviewSession } from "./review-session"
+import { LessonsReviewSession } from "./lessons-review-session"
 import { SelectCard } from "@/app/db/schema"
+import { setLearnedCards } from "@/app/lib/actions"
 
 enum Mode {
   LEARN = "learn",
@@ -32,9 +33,6 @@ export function LessonsView({
   lessonsBatchSize,
   cardsToLearn,
 }: LessonsViewProps) {
-  // IMPORTANT: the use of a generator function in ReviewSession makes it important to memoize data
-  // so that the generator instance is propertly memoized and won't be recreated unless necessary
-  // NOTE: using a generator function to practice how that would work in React, unlikely to use it in production
   const batches = useMemo(
     () =>
       cardsToLearn.reduce<SelectCard[][]>((batches, card, index) => {
@@ -50,27 +48,44 @@ export function LessonsView({
   const [batchIndex, setBatchIndex] = useState(0)
   const [mode, setMode] = useState<Mode>(Mode.LEARN)
 
+  const batchedCards = useMemo(() => batches[batchIndex], [batchIndex, batches])
+  const isLastBatch = batchIndex === batches.length - 1
+
+  const [isPending, startTransition] = useTransition()
+
+  const finishBatch = () => {
+    startTransition(async () => {
+      try {
+        await setLearnedCards(batchedCards)
+        setMode(Mode.FINISH)
+      } catch (error) {
+        // TODO: test error from setLearnedCards
+        console.error(error)
+        if (error instanceof Error) {
+          alert(error.message)
+        }
+      }
+    })
+  }
+
   const goToNextBatch = () => {
     setBatchIndex(prev => prev + 1)
     setMode(Mode.LEARN)
   }
-
-  const batchCards = useMemo(() => batches[batchIndex], [batchIndex, batches])
-  const isLastBatch = batchIndex === batches.length - 1
 
   return (
     <>
       {mode === Mode.LEARN ? (
         <LessonsSession
           deckId={deckId}
-          cards={batchCards}
+          cards={batchedCards}
           onEnd={() => setMode(Mode.REVIEW)}
         />
       ) : (
-        <ReviewSession
-          deckId={deckId}
-          cards={batchCards}
-          onEnd={() => setMode(Mode.FINISH)}
+        <LessonsReviewSession
+          cards={batchedCards}
+          onEnd={finishBatch}
+          buttonDisabled={isPending}
         />
       )}
 
