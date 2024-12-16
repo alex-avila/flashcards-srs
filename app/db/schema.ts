@@ -78,11 +78,7 @@ export const cards = pgTable(
     notes: varchar(),
     level: integer().default(0),
     learnedDate: timestamp("learned_date", { mode: "date" }),
-    // TODO: maybe update nextReviewDate with $onUpdate so that the database takes care of the srs kinda implicitly
-    // - would also need a lastAnswerState ('correct', 'incorrect', null) to know how to update the nextReviewDate
     nextReviewDate: timestamp("next_review_date", { mode: "date" }),
-    lastCorrectDate: timestamp("last_correct_date", { mode: "date" }),
-    // maybe add more like 'lastIncorrectAnswerDate', 'consecutiveCorrectCount', 'internalLevel', etc.
   },
   table => [
     {
