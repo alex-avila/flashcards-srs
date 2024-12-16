@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { useState } from "react"
 import { Ellipsis } from "lucide-react"
+
 import {
   Table,
   TableBody,
@@ -31,6 +32,7 @@ import { Separator } from "@/app/components/ui/separator"
 import { Button } from "@/app/components/ui/button"
 import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
+import { useDayjs } from "@/app/hooks/use-dayjs"
 import { SelectDeck, SelectCard } from "@/app/db/schema"
 import { deleteCard } from "@/app/lib/actions"
 
@@ -53,6 +55,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
   const [activeCardIndex, setActiveCardIndex] = useState<number | undefined>()
   const activeCard =
     activeCardIndex !== undefined ? cards[activeCardIndex] : undefined
+  const dayjs = useDayjs()
 
   return (
     <div>
@@ -102,7 +105,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
               <TableHead className="text-xs">back</TableHead>
               <TableHead className="text-xs">level</TableHead>
               <TableHead className="whitespace-nowrap text-right text-xs">
-                next review
+                next review in
               </TableHead>
               <TableHead className="sr-only text-xs">card actions</TableHead>
             </TableRow>
@@ -119,7 +122,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                 <TableCell className="text-right">{card.level}</TableCell>
                 <TableCell className="text-right">
                   {card.nextReviewDate
-                    ? new Date(card.nextReviewDate).toString()
+                    ? dayjs().to(card.nextReviewDate, true)
                     : "n/a"}
                 </TableCell>
                 <TableCell className="flex justify-end">
