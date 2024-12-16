@@ -38,11 +38,6 @@ interface SessionViewProps {
 }
 
 export function ReviewSession({ cards, onEnd }: SessionViewProps) {
-  if (!cards.length) {
-    // TODO: actually handle this case
-    throw new Error("no cards to review")
-  }
-
   const {
     state: sessionState,
     dispatch: dispatchSessionState,
@@ -80,7 +75,6 @@ export function ReviewSession({ cards, onEnd }: SessionViewProps) {
       })
     } else {
       const nextCard = getNextCard()
-      console.log("submit:nextCard", nextCard)
       if (nextCard) {
         resetForNextReview(nextCard)
       }

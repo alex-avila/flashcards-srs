@@ -18,15 +18,13 @@ export default async function LessonsPage({ params }: LessonsPageProps) {
   const pathname = (await params).deckPathname
   const { deck, lessons } = await fetchLessons({ pathname })
 
-  // TODO: handle scenario in which deck isn't found based on id param
   if (!deck) {
-    throw "deck not found"
+    return <div>deck not found</div>
   }
 
-  // // edge case if user manually navigates here
-  // if (!lessons) {
-  //   // redirect or show error message or something
-  // }
+  if (!lessons) {
+    return <div>No lessons for today</div>
+  }
 
   return (
     <LessonsView

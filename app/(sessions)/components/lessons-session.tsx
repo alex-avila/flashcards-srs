@@ -11,11 +11,6 @@ interface SessionViewProps {
 }
 
 export function LessonsSession({ cards, onEnd }: SessionViewProps) {
-  if (!cards.length) {
-    // TODO: actually handle this case
-    throw new Error("no cards to review")
-  }
-
   const [cardIndex, setCardIndex] = useState(0)
   const [flipped, setFlipped] = useState(false)
   const card = cards[cardIndex]

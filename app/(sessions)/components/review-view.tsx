@@ -1,12 +1,12 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Card } from "@/app/db/placeholder-schema"
 import { ReviewSession } from "./review-session"
+import { SelectCard } from "@/app/db/schema"
 
 interface ReviewViewProps {
-  deckId: string
-  cards: Card[]
+  deckId: number
+  cards: SelectCard[]
 }
 
 export function ReviewView({ deckId, cards }: ReviewViewProps) {
