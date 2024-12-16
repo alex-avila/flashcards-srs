@@ -241,6 +241,10 @@ export function DeckView({ deck, cards }: DeckViewProps) {
           </DialogContent>
         </Dialog>
       </div>
+
+      <div className="pt-3 text-center text-sm text-muted-foreground">
+        last updated: {dayjs().format("MMMM DD, YYYY [at] h:mma").toLowerCase()}
+      </div>
     </div>
   )
 }
