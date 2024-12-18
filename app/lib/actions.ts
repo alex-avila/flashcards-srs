@@ -290,3 +290,14 @@ export async function setLearnedCards(learnedCards: SelectCard[]) {
         : eq(cards.id, learnedCards[0].id)
     )
 }
+
+export async function updateCardSrs(card: SelectCard, incorrectCount: number) {
+  const srsLevel = calculateSrsLevel(card.level!, incorrectCount)
+  const srsTiming = getSrsTiming(card.level!)
+  const updates = {
+    level: srsLevel,
+    nextReviewDate: new Date(new Date().getTime() + srsTiming),
+  }
+
+  await db.update(cards).set(updates).where(eq(cards.id, card.id))
+}

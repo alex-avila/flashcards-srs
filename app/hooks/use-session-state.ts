@@ -34,8 +34,10 @@ function sessionStateReducer(
   }
 }
 
-export function useSessionState(initialState: SessionStateState) {
-  const [state, dispatch] = useReducer(sessionStateReducer, initialState)
+export function useSessionState() {
+  const [state, dispatch] = useReducer(sessionStateReducer, {
+    phase: "interrogation",
+  })
 
   // helper variables
   const isAnswered = state.phase !== "interrogation"

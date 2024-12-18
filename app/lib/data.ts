@@ -133,3 +133,31 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
 
   return { deck: deckInfo, lessons: todaysLessons }
 }
+
+export async function fetchReviews({ pathname }: { pathname: string }) {
+  const firstUser = await db.query.users.findFirst()
+  const deck = await db.query.decks.findFirst({
+    columns: { id: true },
+    where: (decks, { eq }) =>
+      and(
+        eq(decks.userId, firstUser!.id),
+        eq(decks.pathname, decodeURIComponent(pathname))
+      ),
+  })
+
+  if (!deck?.id) {
+    throw new Error(`Deck with pathname ${pathname} not found.`)
+  }
+
+  const reviews = await db.query.cards.findMany({
+    orderBy: sql.raw("random()"),
+    where: (cards, { eq, and, sql, lte, gt }) =>
+      and(
+        eq(cards.deckId, deck.id),
+        gt(cards.level, 0),
+        lte(cards.nextReviewDate, sql`timezone('UTC', now())`)
+      ),
+  })
+
+  return { deck, reviews }
+}

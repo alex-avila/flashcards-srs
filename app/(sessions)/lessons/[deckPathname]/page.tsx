@@ -22,8 +22,8 @@ export default async function LessonsPage({ params }: LessonsPageProps) {
     return <div>deck not found</div>
   }
 
-  if (!lessons) {
-    return <div>No lessons for today</div>
+  if (!lessons?.length) {
+    return <div>no lessons for today</div>
   }
 
   return (

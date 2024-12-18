@@ -42,7 +42,7 @@ function useCardsIterator(cards: SelectCard[]) {
 
 interface LessonsReviewSessionProps {
   cards: SelectCard[]
-  onEnd: (cards: SelectCard[]) => void
+  onEnd: () => void
   buttonDisabled: boolean
 }
 
@@ -56,7 +56,7 @@ export function LessonsReviewSession({
     dispatch: dispatchSessionState,
     isAnswered,
     isFinished,
-  } = useSessionState({ phase: "interrogation" })
+  } = useSessionState()
 
   const { cardsToReview, currentCard, setNextCard, cardDeque, cardReset } =
     useCardsIterator(cards)
@@ -72,7 +72,7 @@ export function LessonsReviewSession({
     event.preventDefault()
 
     if (isFinished) {
-      onEnd(cards)
+      onEnd()
       return
     }
 
