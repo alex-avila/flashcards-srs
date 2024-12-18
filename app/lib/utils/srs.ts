@@ -25,7 +25,7 @@ export function calculateSrsLevel(
   const incorrectAdjustment = Math.ceil(incorrectCount / 2)
   const penaltyFactor = currentLevel >= 5 ? 2 : 1
 
-  return Math.max(1, currentLevel + incorrectAdjustment * penaltyFactor)
+  return Math.max(1, currentLevel + 1 - incorrectAdjustment * penaltyFactor)
 }
 
 export function getSrsTiming(level: number) {
