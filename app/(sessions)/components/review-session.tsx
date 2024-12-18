@@ -53,7 +53,7 @@ function useCardsIterator(cards: SelectCard[]) {
 interface ReviewSessionProps {
   cards: SelectCard[]
   onEnd: () => void
-  onCorrect: (card: SelectCard, incorrectCount: number) => void
+  onCorrect?: (card: SelectCard, incorrectCount: number) => void
   buttonDisabled: boolean
 }
 
@@ -99,8 +99,12 @@ export function ReviewSession({
       })
 
       if (wasCorrect) {
-        const { incorrectCount, ...card } = cardDeque()
-        onCorrect(card, incorrectCount || 0)
+        if (onCorrect) {
+          const { incorrectCount, ...card } = cardDeque()
+          onCorrect(card, incorrectCount || 0)
+        } else {
+          cardDeque()
+        }
       } else {
         cardReset()
       }

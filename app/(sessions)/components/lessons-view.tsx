@@ -12,7 +12,7 @@ import {
 } from "@/app/components/ui/dialog"
 import { Button } from "@/app/components/ui/button"
 import { LessonsSession } from "./lessons-session"
-import { LessonsReviewSession } from "./lessons-review-session"
+import { ReviewSession } from "./review-session"
 import { SelectCard } from "@/app/db/schema"
 import { setLearnedCards } from "@/app/lib/actions"
 
@@ -82,7 +82,7 @@ export function LessonsView({
           onEnd={() => setMode(Mode.REVIEW)}
         />
       ) : (
-        <LessonsReviewSession
+        <ReviewSession
           cards={batchedCards}
           onEnd={finishBatch}
           buttonDisabled={isPending}
