@@ -76,7 +76,7 @@ export const cards = pgTable(
     front: varchar({ length: 55 }).notNull(),
     back: varchar({ length: 55 }).notNull(),
     notes: varchar(),
-    level: integer().default(0),
+    level: integer().default(0).notNull(),
     learnedDate: timestamp("learned_date", { mode: "date" }),
     nextReviewDate: timestamp("next_review_date", { mode: "date" }),
   },

@@ -41,7 +41,10 @@ export function FlashcardSheet({
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetPortal>
-        <SheetContent side="bottom">
+        <SheetContent
+          side="bottom"
+          className="mx-auto max-w-md rounded-t-md shadow"
+        >
           <SheetHeader>
             <SheetTitle>{title}</SheetTitle>
             <SheetDescription className="sr-only">

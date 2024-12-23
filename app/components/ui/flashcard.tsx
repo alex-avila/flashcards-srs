@@ -4,6 +4,8 @@ import { Sparkle } from "lucide-react"
 import { Button } from "@/app/components/ui/button"
 import { SelectCard } from "@/app/db/schema"
 
+const SHOWN_STARS_LIMIT = 5
+
 export interface FlashcardProps {
   card: SelectCard
   canFlip?: boolean
@@ -37,28 +39,33 @@ export function Flashcard({
 
   return (
     <div
-      className={clsx("rounded-xl p-3 shadow-md", {
+      className={clsx("mx-auto w-full max-w-sm rounded-xl p-3 shadow-md", {
         "bg-secondary": view === "front",
         "bg-primary": view === "back",
       })}
     >
-      <div className="rounded-lg border border-primary bg-secondary p-2 dark:border-muted-foreground">
+      <div className="aspect-[4/2] rounded-lg border border-primary bg-secondary p-2 dark:border-muted-foreground">
         <div className="flex justify-between pb-2">
-          <div className="flex gap-1.5" aria-hidden>
-            {[...new Array(card.level || 1).keys()].map((_, i) => (
-              <div
-                key={i}
-                className="flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground"
-              >
-                <Sparkle className="size-3 fill-primary-foreground" />
-              </div>
-            ))}
+          <div className="flex items-center gap-1.5" aria-hidden>
+            {[...new Array(Math.min(card.level, SHOWN_STARS_LIMIT)).keys()].map(
+              (_, i) => (
+                <div
+                  key={i}
+                  className="flex size-4 items-center justify-center rounded-full bg-primary text-primary-foreground"
+                >
+                  <Sparkle className="size-3 fill-primary-foreground" />
+                </div>
+              )
+            )}
+            {card.level > SHOWN_STARS_LIMIT && (
+              <div>+{card.level - SHOWN_STARS_LIMIT}</div>
+            )}
+            <div className="sr-only">level: {card.level}</div>
           </div>
-          <div className="sr-only">level: {card.level}</div>
         </div>
 
-        <div className="flex flex-col">
-          <div className="flex w-48 justify-center self-center rounded px-4 py-6">
+        <div className="flex h-full flex-col">
+          <div className="m-auto flex w-48 justify-center self-center rounded px-4 py-6">
             {/* TODO: add 'lang' property to div properly */}
             <div
               className="text-center text-xl"
@@ -67,7 +74,7 @@ export function Flashcard({
               {view === "back" ? card.back : card.front}
             </div>
           </div>
-          <div className="mt-auto flex items-end justify-between">
+          <div className="flex items-end justify-between">
             <div className="text-sm text-muted-foreground">
               {view === "back" ? "back" : "front"}
             </div>
