@@ -1,6 +1,17 @@
 import Link from "next/link"
 import { Button } from "@/app/components/ui/button"
-import { DeckForm } from "@/app/components/ui/deck-form"
+import {
+  DeckFormProvider,
+  DeckForm,
+  DeckFormSubmit,
+} from "@/app/components/ui/deck-form"
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/app/components/ui/card"
 import { fetchDeck } from "@/app/lib/data"
 
 export default async function EditDeckPage({
@@ -14,14 +25,24 @@ export default async function EditDeckPage({
     const deck = await fetchDeck({ pathname })
 
     return (
-      <div>
-        <h2 className="pb-5 font-bold">edit deck: {deck.name}</h2>
-        <DeckForm
-          deck={deck}
-          submitLabel="update"
-          submitPendingLabel="updating…"
-        />
-      </div>
+      <Card className="mx-auto max-w-md space-y-3 md:mt-6">
+        <CardHeader>
+          <CardTitle>
+            <h2>{deck.name} settings</h2>
+          </CardTitle>
+        </CardHeader>
+        <DeckFormProvider deck={deck}>
+          <CardContent>
+            <DeckForm />
+          </CardContent>
+          <CardFooter>
+            <DeckFormSubmit
+              submitLabel="update"
+              submitPendingLabel="updating…"
+            />
+          </CardFooter>
+        </DeckFormProvider>
+      </Card>
     )
   } catch {
     return (

@@ -1,6 +1,6 @@
 "use client"
 
-import { useActionState, useMemo } from "react"
+import { useActionState, useMemo, createContext, useContext } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -31,23 +31,94 @@ import {
 } from "@/app/lib/actions"
 import { SelectDeck, deckSchema } from "@/app/db/schema"
 
-interface DeckFormProps {
+interface DeckFormContextState {
   deck?: SelectDeck
-  submitLabel?: string
-  submitPendingLabel?: string
+  formId: string
+  isPending: boolean
+  formAction: (payload: FormData) => void
+  formState: ActionsState
+}
+
+const DeckFormContext = createContext<DeckFormContextState>({
+  isPending: false,
+  formId: "deck-form",
+  formAction: () => {},
+  formState: { message: "" },
+})
+
+function useDeckForm() {
+  const context = useContext(DeckFormContext)
+  if (!context) {
+    throw new Error("useDeckForm must be used within DeckFormProvider")
+  }
+  return context
+}
+
+interface DeckFormProviderProps {
+  deck?: SelectDeck
+  formId?: string
+  children?: React.ReactNode
+}
+
+export function DeckFormProvider({
+  deck,
+  formId = "deck-form",
+  children,
+}: DeckFormProviderProps) {
+  const action = deck ? updateDeck.bind(null, deck.id) : createDeck
+  const [state, formAction, isPending] = useActionState(action, {
+    message: "",
+  } as ActionsState)
+
+  return (
+    <DeckFormContext.Provider
+      value={{ isPending, formAction, formState: state, deck, formId }}
+    >
+      {children}
+    </DeckFormContext.Provider>
+  )
+}
+
+interface DeckFormSubmitProps {
+  submitLabel: string
+  submitPendingLabel: string
+  withDelete?: boolean
   deleteLabel?: string
   deletePendingLabel?: string
 }
 
-// source: https://github.com/react-hook-form/react-hook-form/issues/10391
-// this form creates a new deck and redirects to the deck page in which the user can create cards
-export function DeckForm({
-  deck,
+export function DeckFormSubmit({
   submitLabel = "submit",
   submitPendingLabel = "submitting…",
   deleteLabel = "delete",
   deletePendingLabel = "deleting…",
-}: DeckFormProps) {
+}: DeckFormSubmitProps) {
+  const { formId, deck, isPending } = useDeckForm()
+
+  return (
+    <div className="flex gap-2">
+      <Button form={formId} type="submit" disabled={isPending}>
+        {!isPending ? submitLabel : submitPendingLabel}
+      </Button>
+      {deck && (
+        <Button
+          type="button"
+          variant="destructive"
+          disabled={isPending}
+          onClick={() => deleteDeck({ deckId: deck.id })}
+        >
+          {!isPending ? deleteLabel : deletePendingLabel}
+        </Button>
+      )}
+    </div>
+  )
+}
+
+// source: https://github.com/react-hook-form/react-hook-form/issues/10391
+// this form creates a new deck and redirects to the deck page in which the user can create cards
+export function DeckForm() {
+  const { deck, formId, formAction, formState: state } = useDeckForm()
+
   const formDefaultValues = useMemo(
     () => ({
       name: deck?.name || "",
@@ -62,16 +133,10 @@ export function DeckForm({
     defaultValues: formDefaultValues,
   })
 
-  const action = deck ? updateDeck.bind(null, deck.id) : createDeck
-  const [state, formAction, isPending] = useActionState(action, {
-    message: "",
-  } as ActionsState)
-
-  // TODO: show parsed errors that happen in the createDeck action due to failing parsing
-
   return (
     <Form {...form}>
       <form
+        id={formId}
         action={formAction}
         onSubmit={async evt => {
           // trigger validation on all fields
@@ -162,35 +227,18 @@ export function DeckForm({
             </FormItem>
           )}
         />
-        <div className="pt-2">
-          {!state.success && state.message && (
-            <div className="pb-3 text-sm text-destructive">
-              <div className="font-medium">{state.message}</div>
-              {state.errors && (
-                <ul className="list-disc ps-5 pt-0.5">
-                  {state.errors.map(error => (
-                    <li key={error}>{error}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-          <div className="flex gap-2">
-            <Button type="submit" disabled={isPending}>
-              {!isPending ? submitLabel : submitPendingLabel}
-            </Button>
-            {deck && (
-              <Button
-                type="button"
-                variant="destructive"
-                disabled={isPending}
-                onClick={() => deleteDeck({ deckId: deck.id })}
-              >
-                {!isPending ? deleteLabel : deletePendingLabel}
-              </Button>
+        {!state.success && state.message && (
+          <div className="pb-3 pt-2 text-sm text-destructive">
+            <div className="font-medium">{state.message}</div>
+            {state.errors && (
+              <ul className="list-disc ps-5 pt-0.5">
+                {state.errors.map(error => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
             )}
           </div>
-        </div>
+        )}
       </form>
     </Form>
   )
