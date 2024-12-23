@@ -121,9 +121,11 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                 </TableCell>
                 <TableCell className="text-right">{card.level}</TableCell>
                 <TableCell className="text-right">
-                  {card.nextReviewDate
-                    ? dayjs().to(card.nextReviewDate, true)
-                    : "n/a"}
+                  {!card.nextReviewDate
+                    ? "n/a"
+                    : dayjs(card.nextReviewDate).isBefore(dayjs())
+                      ? "now"
+                      : dayjs().to(card.nextReviewDate, true)}
                 </TableCell>
                 <TableCell className="flex justify-end">
                   <DropdownMenu>
