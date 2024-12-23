@@ -15,9 +15,11 @@ export default async function DashboardPage() {
         </Button>
       </div>
 
-      {decks.map(deck => (
-        <Deck key={deck.id} deck={deck} />
-      ))}
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(theme(columns.3xs),1fr))] gap-4">
+        {decks.map(deck => (
+          <Deck key={deck.id} deck={deck} />
+        ))}
+      </div>
     </section>
   )
 }
