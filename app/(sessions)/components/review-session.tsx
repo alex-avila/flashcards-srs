@@ -1,11 +1,11 @@
 import { useState } from "react"
 import { clsx } from "clsx"
 import { Flashcard } from "@/app/components/ui/flashcard"
-import { Progress } from "@/app/components/ui/progress"
 import { Input } from "@/app/components/ui/input"
 import { Button } from "@/app/components/ui/button"
 import { useSessionState } from "@/app/hooks/use-session-state"
 import { SelectCard } from "@/app/db/schema"
+import { ProgressWithHomeLink } from "./progress-with-home-link"
 
 type CardWithIncorrectCount = SelectCard & { incorrectCount?: number }
 
@@ -115,8 +115,8 @@ export function ReviewSession({
 
   return (
     <>
-      <Progress
-        value={((cards.length - cardsToReview.length) / cards.length) * 100}
+      <ProgressWithHomeLink
+        progress={((cards.length - cardsToReview.length) / cards.length) * 100}
       />
       <div className="mt-6 space-y-6">
         <Flashcard card={currentCard} canFlip={false} flipped={isAnswered} />

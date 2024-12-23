@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { Flashcard } from "@/app/components/ui/flashcard"
-import { Progress } from "@/app/components/ui/progress"
 import { Button } from "@/app/components/ui/button"
 import { SelectCard } from "@/app/db/schema"
+import { ProgressWithHomeLink } from "./progress-with-home-link"
 
 interface SessionViewProps {
   deckId: number
@@ -31,11 +31,9 @@ export function LessonsSession({ cards, onEnd }: SessionViewProps) {
     setCardIndex(prev => prev - 1)
   }
 
-  const progress = ((cardIndex + 1) / cards.length) * 100
-
   return (
     <>
-      <Progress value={progress} />
+      <ProgressWithHomeLink progress={((cardIndex + 1) / cards.length) * 100} />
       <div className="mt-6 space-y-6">
         <Flashcard card={card} flipped={flipped} onFlip={setFlipped} />
         <div className="mt-6 flex justify-center gap-2">
