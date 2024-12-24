@@ -1,10 +1,16 @@
 import { eq, count, sql, and } from "drizzle-orm"
 import { db } from "@/app/db"
 import { decks, cards } from "@/app/db/schema"
+import { auth } from "@/auth"
 
-//export async function fetchDecksForDashboard(userId: (typeof users)["id"]) {
+async function getSession() {
+  const session = await auth()
+  if (!session?.user) throw new Error("Session user not found")
+  return session
+}
+
 export async function fetchDecksForDashboard() {
-  const firstUser = await db.query.users.findFirst()
+  const { user } = await getSession()
   const cardCounts = db
     .select({
       deckId: cards.deckId,
@@ -39,17 +45,17 @@ export async function fetchDecksForDashboard() {
     })
     .from(decks)
     .leftJoin(cardCounts, eq(decks.id, cardCounts.deckId))
-    .where(eq(decks.userId, firstUser!.id))
+    .where(eq(decks.userId, user.id))
 
   return result
 }
 
 export async function fetchDeckWithCards({ pathname }: { pathname: string }) {
-  const firstUser = await db.query.users.findFirst()
+  const { user } = await getSession()
   const deckWithCards = await db.query.decks.findFirst({
     where: (decks, { and, eq }) =>
       and(
-        eq(decks.userId, firstUser!.id),
+        eq(decks.userId, user.id),
         eq(decks.pathname, decodeURIComponent(pathname))
       ),
     with: {
@@ -67,11 +73,11 @@ export async function fetchDeckWithCards({ pathname }: { pathname: string }) {
 }
 
 export async function fetchDeck({ pathname }: { pathname: string }) {
-  const firstUser = await db.query.users.findFirst()
+  const { user } = await getSession()
   const deck = await db.query.decks.findFirst({
     where: (decks, { and, eq }) =>
       and(
-        eq(decks.userId, firstUser!.id),
+        eq(decks.userId, user.id),
         eq(decks.pathname, decodeURIComponent(pathname))
       ),
   })
@@ -84,7 +90,7 @@ export async function fetchDeck({ pathname }: { pathname: string }) {
 }
 
 export async function fetchLessons({ pathname }: { pathname: string }) {
-  const firstUser = await db.query.users.findFirst()
+  const { user } = await getSession()
   const learnedTodayCount = db
     .select({
       deckId: cards.deckId,
@@ -116,7 +122,7 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
     .leftJoin(learnedTodayCount, eq(decks.id, learnedTodayCount.deckId))
     .where(
       and(
-        eq(decks.userId, firstUser!.id),
+        eq(decks.userId, user.id),
         eq(decks.pathname, decodeURIComponent(pathname))
       )
     )
@@ -136,12 +142,12 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
 }
 
 export async function fetchReviews({ pathname }: { pathname: string }) {
-  const firstUser = await db.query.users.findFirst()
+  const { user } = await getSession()
   const deck = await db.query.decks.findFirst({
     columns: { id: true, srsTimingsType: true },
     where: (decks, { eq }) =>
       and(
-        eq(decks.userId, firstUser!.id),
+        eq(decks.userId, user.id),
         eq(decks.pathname, decodeURIComponent(pathname))
       ),
   })

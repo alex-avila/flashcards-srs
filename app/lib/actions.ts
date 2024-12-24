@@ -4,6 +4,8 @@ import { redirect } from "next/navigation"
 // TODO: figure out if revalidatePath is strictly necessary
 import { revalidatePath } from "next/cache"
 import { eq, sql, or } from "drizzle-orm"
+import { signIn } from "@/auth"
+import { AuthError } from "next-auth"
 import { db } from "@/app/db"
 import {
   decks,
@@ -14,6 +16,7 @@ import {
 } from "@/app/db/schema"
 import { kebabCase } from "./utils"
 import { calculateSrs } from "./utils/srs"
+import { auth } from "@/auth"
 
 const ACTION_MESSAGES = {
   success: "success",
@@ -25,6 +28,12 @@ export type ActionsState = {
   message: string
   success?: boolean
   errors?: string[]
+}
+
+async function getSession() {
+  const session = await auth()
+  if (!session?.user) throw new Error("Session user not found")
+  return session
 }
 
 function handleRedirect(
@@ -70,12 +79,11 @@ export async function createDeck(
   }
 
   try {
-    // TODO: get rid of this query after implementing auth
-    const firstUser = await db.query.users.findFirst()
+    const { user } = await getSession()
     const pathname = kebabCase(parsed.data.name)
     const values: typeof decks.$inferInsert = {
       ...parsed.data,
-      userId: firstUser!.id,
+      userId: user.id,
       pathname,
       srsTimingsType: pathname.includes("demo") ? "demo" : "default",
     }
@@ -125,11 +133,10 @@ export async function updateDeck(
   }
 
   try {
-    // TODO: get rid of this query after implementing auth
-    const firstUser = await db.query.users.findFirst()
+    const { user } = await getSession()
     const values: typeof decks.$inferInsert = {
       ...parsed.data,
-      userId: firstUser!.id,
+      userId: user.id,
       pathname: kebabCase(parsed.data.name),
     }
 
@@ -321,4 +328,24 @@ export async function updateCardSrs(
   }
 
   await db.update(cards).set(updates).where(eq(cards.id, card.id))
+}
+
+export async function authenticate(
+  prevState: ActionsState,
+  formData: FormData
+): Promise<ActionsState> {
+  try {
+    await signIn("credentials", formData)
+    return { message: ACTION_MESSAGES.success, success: true }
+  } catch (error) {
+    if (error instanceof AuthError) {
+      switch (error.type) {
+        case "CredentialsSignin":
+          return { message: "Invalid credentials." }
+        default:
+          return { message: "Something went wrong." }
+      }
+    }
+    throw error
+  }
 }

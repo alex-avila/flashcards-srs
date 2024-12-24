@@ -8,6 +8,7 @@ import {
   unique,
   pgEnum,
   boolean,
+  text,
 } from "drizzle-orm/pg-core"
 import { z } from "zod"
 
@@ -27,7 +28,8 @@ export const srsTimingsTypeEnum = pgEnum(
 export const users = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
   username: varchar({ length: 255 }).notNull().unique(),
-  email: varchar({ length: 255 }).notNull().unique(),
+  email: varchar({ length: 255 }).unique(),
+  password: text(),
 })
 
 export const usersRelations = relations(users, ({ many }) => ({
@@ -35,6 +37,11 @@ export const usersRelations = relations(users, ({ many }) => ({
 }))
 
 export type SelectUser = typeof users.$inferSelect
+
+export const userSchema = z.object({
+  username: z.string().min(5),
+  password: z.string().min(5),
+})
 
 export const decks = pgTable(
   "decks",

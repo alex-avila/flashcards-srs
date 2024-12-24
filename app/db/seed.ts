@@ -1,4 +1,5 @@
 import "dotenv/config"
+import bcrypt from "bcrypt"
 import { db } from "."
 import * as schema from "./schema"
 
@@ -7,9 +8,11 @@ async function main() {
 }
 
 async function seed() {
+  const hashedPassword = await bcrypt.hash("12345", 10)
   const user: typeof schema.users.$inferInsert = {
     username: "rickdeckard",
     email: "rickdeckard@example.com",
+    password: hashedPassword,
   }
 
   const [newUser] = await db.insert(schema.users).values(user).returning()
