@@ -1,8 +1,6 @@
 import "dotenv/config"
-import { drizzle } from "drizzle-orm/node-postgres"
+import { db } from "."
 import * as schema from "./schema"
-
-export const db = drizzle<typeof schema>(process.env.DATABASE_URL!)
 
 async function main() {
   await seed()
@@ -32,35 +30,30 @@ async function seed() {
       front: "犬 (いぬ)",
       back: "Dog",
       notes: "Common pet",
-      level: 1,
     },
     {
       deckId: newDeck.id,
       front: "猫 (ねこ)",
       back: "Cat",
       notes: "Popular animal",
-      level: 1,
     },
     {
       deckId: newDeck.id,
       front: "水 (みず)",
       back: "Water",
       notes: "Drinkable",
-      level: 1,
     },
     {
       deckId: newDeck.id,
       front: "空 (そら)",
       back: "Sky",
       notes: "Blue on a clear day",
-      level: 1,
     },
     {
       deckId: newDeck.id,
       front: "ありがとう",
       back: "Thank you",
       notes: "Polite expression",
-      level: 1,
     },
   ]
   await db.insert(schema.cards).values(cards).returning()
