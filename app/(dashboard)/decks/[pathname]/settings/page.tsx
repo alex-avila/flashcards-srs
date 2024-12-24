@@ -14,7 +14,7 @@ import {
 } from "@/app/components/ui/card"
 import { fetchDeck } from "@/app/lib/data"
 
-export default async function EditDeckPage({
+export default async function DeckSettingsPage({
   params,
 }: {
   params: Promise<{ pathname: string }>
