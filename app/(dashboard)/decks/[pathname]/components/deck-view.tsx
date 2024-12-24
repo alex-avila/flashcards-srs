@@ -35,6 +35,7 @@ import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
 import { useDayjs } from "@/app/hooks/use-dayjs"
 import { SelectDeck, SelectCard } from "@/app/db/schema"
 import { deleteCard } from "@/app/lib/actions"
+import { getMaxSrsLevel } from "@/app/lib/utils/srs"
 
 enum Mode {
   CREATE = "create",
@@ -56,6 +57,8 @@ export function DeckView({ deck, cards }: DeckViewProps) {
   const activeCard =
     activeCardIndex !== undefined ? cards[activeCardIndex] : undefined
   const dayjs = useDayjs()
+
+  const maxSrsLevel = getMaxSrsLevel(deck.srsTimingsType)
 
   return (
     <div>
@@ -96,14 +99,19 @@ export function DeckView({ deck, cards }: DeckViewProps) {
       <div className="pt-5">
         {/* TODO: use the data table example instead for more advanced features */}
         <Table>
-          <TableCaption className="sr-only">
-            a list of the cards and associated stats
+          <TableCaption>
+            a list of the cards and associated stats.
+            <ul>
+              <li>
+                <span className="font-bold">*</span> = max level
+              </li>
+            </ul>
           </TableCaption>
           <TableHeader>
             <TableRow>
               <TableHead className="min-w-24 text-xs">front</TableHead>
               <TableHead className="text-xs">back</TableHead>
-              <TableHead className="text-xs">level</TableHead>
+              <TableHead className="text-right text-xs">level</TableHead>
               <TableHead className="whitespace-nowrap text-right text-xs">
                 next review in
               </TableHead>
@@ -119,7 +127,10 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                 <TableCell className="max-w-28 overflow-x-hidden text-ellipsis whitespace-nowrap">
                   {card.back}
                 </TableCell>
-                <TableCell className="text-right">{card.level}</TableCell>
+                <TableCell className="text-right">
+                  {card.level}
+                  {maxSrsLevel === card.level ? "*" : ""}
+                </TableCell>
                 <TableCell className="text-right">
                   {!card.nextReviewDate
                     ? "n/a"

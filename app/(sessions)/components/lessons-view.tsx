@@ -24,12 +24,14 @@ enum Mode {
 
 interface LessonsViewProps {
   deckId: number
+  deckSrsTimingsType: string
   lessonsBatchSize: number
   cardsToLearn: SelectCard[]
 }
 
 export function LessonsView({
   deckId,
+  deckSrsTimingsType,
   lessonsBatchSize,
   cardsToLearn,
 }: LessonsViewProps) {
@@ -56,7 +58,7 @@ export function LessonsView({
   const finishBatch = () => {
     startTransition(async () => {
       try {
-        await setLearnedCards(batchedCards)
+        await setLearnedCards(deckSrsTimingsType, batchedCards)
         setMode(Mode.FINISH)
       } catch (error) {
         // TODO: test error from setLearnedCards

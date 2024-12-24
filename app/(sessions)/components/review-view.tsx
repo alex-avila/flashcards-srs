@@ -8,9 +8,10 @@ import { updateCardSrs } from "@/app/lib/actions"
 
 interface ReviewViewProps {
   cards: SelectCard[]
+  deckSrsTimingsType: string
 }
 
-export function ReviewView({ cards }: ReviewViewProps) {
+export function ReviewView({ cards, deckSrsTimingsType }: ReviewViewProps) {
   const router = useRouter()
 
   const [isPending, startTransition] = useTransition()
@@ -20,7 +21,7 @@ export function ReviewView({ cards }: ReviewViewProps) {
     incorrectCount: number
   ) => {
     startTransition(() => {
-      updateCardSrs(card, incorrectCount)
+      updateCardSrs(deckSrsTimingsType, card, incorrectCount)
     })
   }
 

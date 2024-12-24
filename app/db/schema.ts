@@ -6,8 +6,23 @@ import {
   check,
   timestamp,
   unique,
+  pgEnum,
+  boolean,
 } from "drizzle-orm/pg-core"
 import { z } from "zod"
+
+export const SRS_TIMINGS_TYPES = {
+  DEFAULT: "default",
+  DEMO: "demo",
+} as const
+
+export type SrsTimingType =
+  (typeof SRS_TIMINGS_TYPES)[keyof typeof SRS_TIMINGS_TYPES]
+
+export const srsTimingsTypeEnum = pgEnum(
+  "srs_timings_type",
+  Object.values(SRS_TIMINGS_TYPES) as [string, ...string[]]
+)
 
 export const users = pgTable("users", {
   id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -26,13 +41,14 @@ export const decks = pgTable(
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     userId: integer("user_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     name: varchar({ length: 60 }).notNull(),
     pathname: varchar().notNull(),
     description: varchar(),
     lessonsPerDay: integer("lessons_per_day").default(15).notNull(),
     lessonsBatchSize: integer("lessons_batch_size").default(5).notNull(),
+    srsTimingsType: srsTimingsTypeEnum().default("default").notNull(),
   },
   table => [
     {
@@ -66,19 +82,23 @@ export const deckSchema = z.object({
   description: z.string().optional(),
   lessonsPerDay: z.coerce.number().min(1).max(100),
   lessonsBatchSize: z.coerce.number().min(3).max(10),
+  srsTimingsType: z.enum(["default", "demo"]),
 })
 
 export const cards = pgTable(
   "cards",
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    deckId: integer("deck_id").references(() => decks.id),
+    deckId: integer("deck_id").references(() => decks.id, {
+      onDelete: "cascade",
+    }),
     front: varchar({ length: 55 }).notNull(),
     back: varchar({ length: 55 }).notNull(),
     notes: varchar(),
     level: integer().default(0).notNull(),
     learnedDate: timestamp("learned_date", { mode: "date" }),
     nextReviewDate: timestamp("next_review_date", { mode: "date" }),
+    retired: boolean().default(false).notNull(),
   },
   table => [
     {

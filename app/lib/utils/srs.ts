@@ -11,12 +11,24 @@ const TIMINGS = [
   4 * 4 * 7 * 24 * 60 * 60 * 1000, // 4 months
 ]
 
+// when a card gets to level 4, no new timing will be found and that will be considered a retired card
 const TIMINGS_DEMO = [
-  30, // 30 seconds
-  60, // 1 minute
-  5 * 60, // 5 minutes
-  ...TIMINGS,
+  30 * 1000, // 30 seconds
+  60 * 1000, // 1 minute
+  5 * 60 * 1000, // 5 minutes
 ]
+
+function srsTimingTypeToTiming(srsTimingType: string) {
+  if (srsTimingType === "demo") {
+    return TIMINGS_DEMO
+  }
+
+  return TIMINGS
+}
+
+export function getMaxSrsLevel(srsTimingType: string) {
+  return srsTimingTypeToTiming(srsTimingType).length + 1
+}
 
 export function calculateSrsLevel(
   currentLevel: number,
@@ -28,34 +40,23 @@ export function calculateSrsLevel(
   return Math.max(1, currentLevel + 1 - incorrectAdjustment * penaltyFactor)
 }
 
-export function getSrsTiming(level: number) {
-  return TIMINGS[level]
+export function getSrsTimingIfNotMax(
+  srsTimingsType: string,
+  newLevel: number
+): number | false {
+  const timings = srsTimingTypeToTiming(srsTimingsType)
+  const foundTiming = timings[newLevel - 1]
+
+  return foundTiming || false
 }
 
-// demo srs explanation:
-// demo decks have cards that start at level -4 then switch to regular timings when they reach level 0
-// level -4
-// level -3 -> 30 seconds -> level -2
-// level -2 -> 60 seconds -> level -1
-// level -1 -> 5 minutes -> level 0
-// regular cards
-// level 0 (to level 1 immediately after learning)
-// level 1 -> 4 hours -> level 2
-// level 2 -> 8 hours -> level 3
-// level 3 -> 1 day -> level 4
-export function calculateSrsLevelDemo(
+export function calculateSrs(
+  srsTimingsType: string,
   currentLevel: number,
   incorrectCount: number
-): number {
-  if (currentLevel < 0) {
-    return incorrectCount > 0
-      ? Math.max(-3, currentLevel - 1)
-      : currentLevel + 1
-  }
+) {
+  const srsLevel = calculateSrsLevel(currentLevel, incorrectCount)
+  const srsTiming = getSrsTimingIfNotMax(srsTimingsType, srsLevel)
 
-  return calculateSrsLevel(currentLevel, incorrectCount)
-}
-
-export function getSrsTimingDemo(level: number) {
-  return TIMINGS_DEMO[level]
+  return { srsLevel, srsTiming, isMax: !srsTiming }
 }

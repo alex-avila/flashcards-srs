@@ -13,7 +13,7 @@ import {
   SelectCard,
 } from "@/app/db/schema"
 import { kebabCase } from "./utils"
-import { calculateSrsLevel, getSrsTiming } from "./utils/srs"
+import { calculateSrs } from "./utils/srs"
 
 const ACTION_MESSAGES = {
   success: "success",
@@ -72,10 +72,12 @@ export async function createDeck(
   try {
     // TODO: get rid of this query after implementing auth
     const firstUser = await db.query.users.findFirst()
+    const pathname = kebabCase(parsed.data.name)
     const values: typeof decks.$inferInsert = {
       ...parsed.data,
       userId: firstUser!.id,
-      pathname: kebabCase(parsed.data.name),
+      pathname,
+      srsTimingsType: pathname.includes("demo") ? "demo" : "default",
     }
 
     ;[{ insertedPathname }] = await db
@@ -273,8 +275,16 @@ export async function deleteCard(cardId: number, deckPathname: string) {
   }
 }
 
-export async function setLearnedCards(learnedCards: SelectCard[]) {
-  const srsTiming = getSrsTiming(0)
+export async function setLearnedCards(
+  srsTimingsType: string,
+  learnedCards: SelectCard[]
+) {
+  const { srsTiming } = calculateSrs(srsTimingsType, 0, 0)
+
+  if (!srsTiming) {
+    throw new Error("No initial srs timing found")
+  }
+
   const updates = {
     level: 1,
     learnedDate: sql`timezone('UTC', now())`,
@@ -291,12 +301,23 @@ export async function setLearnedCards(learnedCards: SelectCard[]) {
     )
 }
 
-export async function updateCardSrs(card: SelectCard, incorrectCount: number) {
-  const srsLevel = calculateSrsLevel(card.level!, incorrectCount)
-  const srsTiming = getSrsTiming(card.level!)
+export async function updateCardSrs(
+  srsTimingsType: string,
+  card: SelectCard,
+  incorrectCount: number
+) {
+  const { srsLevel, srsTiming, isMax } = calculateSrs(
+    srsTimingsType,
+    card.level,
+    incorrectCount
+  )
+
   const updates = {
     level: srsLevel,
-    nextReviewDate: new Date(new Date().getTime() + srsTiming),
+    nextReviewDate: !srsTiming
+      ? null
+      : new Date(new Date().getTime() + srsTiming),
+    retired: isMax,
   }
 
   await db.update(cards).set(updates).where(eq(cards.id, card.id))

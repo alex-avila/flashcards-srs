@@ -17,5 +17,5 @@ export default async function ReviewsPage({ params }: ReviewsPageProps) {
     return <div>no reviews</div>
   }
 
-  return <ReviewView cards={reviews} />
+  return <ReviewView deckSrsTimingsType={deck.srsTimingsType} cards={reviews} />
 }

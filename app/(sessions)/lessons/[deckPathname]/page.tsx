@@ -29,6 +29,7 @@ export default async function LessonsPage({ params }: LessonsPageProps) {
   return (
     <LessonsView
       deckId={deck.id}
+      deckSrsTimingsType={deck.srsTimingsType}
       lessonsBatchSize={deck.lessonsBatchSize}
       cardsToLearn={lessons}
     />

@@ -110,6 +110,7 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
         sql<number>`coalesce(${learnedTodayCount.learnedTodayCount}, 0)`.mapWith(
           Number
         ),
+      srsTimingsType: decks.srsTimingsType,
     })
     .from(decks)
     .leftJoin(learnedTodayCount, eq(decks.id, learnedTodayCount.deckId))
@@ -137,7 +138,7 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
 export async function fetchReviews({ pathname }: { pathname: string }) {
   const firstUser = await db.query.users.findFirst()
   const deck = await db.query.decks.findFirst({
-    columns: { id: true },
+    columns: { id: true, srsTimingsType: true },
     where: (decks, { eq }) =>
       and(
         eq(decks.userId, firstUser!.id),

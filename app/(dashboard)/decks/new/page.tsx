@@ -6,6 +6,7 @@ import {
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -17,8 +18,12 @@ export default function NewDeckPage() {
     <Card className="mx-auto max-w-md space-y-3 md:mt-6">
       <CardHeader>
         <CardTitle>
-          <h2>create a new deck</h2>
+          <h2>New deck</h2>
         </CardTitle>
+        <CardDescription>
+          Create a new deck. Include &ldquo;demo&rdquo; in the name to create a
+          demo deck.
+        </CardDescription>
       </CardHeader>
       <DeckFormProvider>
         <CardContent>
