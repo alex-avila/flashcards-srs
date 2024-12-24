@@ -2,7 +2,7 @@ import {
   DeckFormProvider,
   DeckForm,
   DeckFormSubmit,
-} from "@/app/components/ui/deck-form"
+} from "../../components/deck-form"
 import {
   Card,
   CardContent,
