@@ -20,6 +20,7 @@ async function seed() {
   const deck: typeof schema.decks.$inferInsert = {
     userId: newUser.id,
     name: "Japanese Vocabulary",
+    pathname: "japanese-vocabulary",
     description: "Some japanese vocabulary and hiragana and katakana",
   }
   const [newDeck] = await db.insert(schema.decks).values(deck).returning()
