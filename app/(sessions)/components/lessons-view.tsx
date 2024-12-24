@@ -16,6 +16,20 @@ import { ReviewSession } from "./review-session"
 import { SelectCard } from "@/app/db/schema"
 import { setLearnedCards } from "@/app/lib/actions"
 
+function shuffleCards(array: Array<SelectCard>) {
+  const arrayCopy = [...array]
+  for (let i = arrayCopy.length - 1; i > 0; i--) {
+    // generate a random index
+    const randomIndex = Math.floor(Math.random() * (i + 1))
+    // swap the current element with the randomly chosen one
+    ;[arrayCopy[i], arrayCopy[randomIndex]] = [
+      arrayCopy[randomIndex],
+      arrayCopy[i],
+    ]
+  }
+  return arrayCopy
+}
+
 enum Mode {
   LEARN = "learn",
   REVIEW = "review",
@@ -85,7 +99,7 @@ export function LessonsView({
         />
       ) : (
         <ReviewSession
-          cards={batchedCards}
+          cards={shuffleCards(batchedCards)}
           onEnd={finishBatch}
           buttonDisabled={isPending}
         />
