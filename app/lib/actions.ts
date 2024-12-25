@@ -22,6 +22,7 @@ import {
 import { kebabCase } from "./utils"
 import { calculateSrs } from "./utils/srs"
 import { auth } from "@/auth"
+import { decksForSignups } from "../db/seed-for-signups"
 
 const ACTION_MESSAGES = {
   success: "success",
@@ -382,8 +383,34 @@ export async function signup(
       password: hashedPassword,
     }
 
-    await db.insert(users).values(values)
+    const [{ userId }] = await db
+      .insert(users)
+      .values(values)
+      .returning({ userId: users.id })
     didCreateAccount = true
+
+    // create some initial decks and cards
+    const decksToInsert: Array<typeof decks.$inferInsert> = decksForSignups.map(
+      d => ({
+        userId,
+        name: d.name,
+        pathname: d.pathname,
+        ...(d.description && { description: d.description }),
+        ...(d.srsTimingsType && { srsTimingsType: d.srsTimingsType }),
+      })
+    )
+    const insertedDecks = await db
+      .insert(decks)
+      .values(decksToInsert)
+      .returning()
+    const cardsToInsert: Array<typeof cards.$inferInsert> =
+      insertedDecks.flatMap(deck => {
+        const foundDeck = decksForSignups.find(
+          _deck => _deck.pathname === deck.pathname
+        )!
+        return foundDeck._cards.map(card => ({ ...card, deckId: deck.id }))
+      })
+    await db.insert(cards).values(cardsToInsert)
 
     await signIn("credentials", {
       username: parsed.data.username,

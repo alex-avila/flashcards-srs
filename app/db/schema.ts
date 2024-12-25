@@ -96,9 +96,11 @@ export const cards = pgTable(
   "cards",
   {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    deckId: integer("deck_id").references(() => decks.id, {
-      onDelete: "cascade",
-    }),
+    deckId: integer("deck_id")
+      .references(() => decks.id, {
+        onDelete: "cascade",
+      })
+      .notNull(),
     front: varchar({ length: 55 }).notNull(),
     back: varchar({ length: 55 }).notNull(),
     notes: varchar(),
