@@ -4,8 +4,11 @@ import { redirect } from "next/navigation"
 // TODO: figure out if revalidatePath is strictly necessary
 import { revalidatePath } from "next/cache"
 import { eq, sql, or } from "drizzle-orm"
-import { signIn } from "@/auth"
+import bcrypt from "bcrypt"
+import { NeonDbError } from "@neondatabase/serverless"
 import { AuthError } from "next-auth"
+
+import { signIn } from "@/auth"
 import { db } from "@/app/db"
 import {
   decks,
@@ -13,6 +16,8 @@ import {
   deckSchema,
   cardSchema,
   SelectCard,
+  users,
+  userSchema,
 } from "@/app/db/schema"
 import { kebabCase } from "./utils"
 import { calculateSrs } from "./utils/srs"
@@ -22,6 +27,7 @@ const ACTION_MESSAGES = {
   success: "success",
   failedParsing: "Form data parsing failed.",
   unexpected: "Unexpected error. Please try again.",
+  somethingWentWrong: "Something went wrong.",
 }
 
 export type ActionsState = {
@@ -345,6 +351,70 @@ export async function authenticate(
         default:
           return { message: "Something went wrong." }
       }
+    }
+    throw error
+  }
+}
+
+export async function signup(
+  prevState: ActionsState,
+  formData: FormData
+): Promise<ActionsState> {
+  const data = {
+    username: formData.get("username"),
+    password: formData.get("password"),
+  }
+  const parsed = userSchema.safeParse(data)
+
+  if (!parsed.success) {
+    return {
+      message: ACTION_MESSAGES.failedParsing,
+      errors: parsed.error.issues.map(issue => issue.message),
+    }
+  }
+
+  let didCreateAccount = false
+
+  try {
+    const hashedPassword = await bcrypt.hash(parsed.data.password, 10)
+    const values: typeof users.$inferInsert = {
+      ...parsed.data,
+      password: hashedPassword,
+    }
+
+    await db.insert(users).values(values)
+    didCreateAccount = true
+
+    await signIn("credentials", {
+      username: parsed.data.username,
+      password: parsed.data.password,
+    })
+
+    return { message: ACTION_MESSAGES.success, success: true }
+  } catch (error) {
+    // TODO: test an unexpected error type
+    const message = didCreateAccount
+      ? "Account created. Unable to log in. Please try again at login page."
+      : "Please try again"
+    if (error instanceof NeonDbError) {
+      console.log("NeonDbError")
+      console.error(error)
+
+      if (
+        ["duplicate key value", "users_username_unique"].every(msg =>
+          error.message.includes(msg)
+        )
+      ) {
+        // TODO: check this on input instead
+        return { message: "Username taken" }
+      }
+
+      return { message }
+    }
+    if (error instanceof AuthError) {
+      console.log("AuthError")
+      console.error(error)
+      return { message }
     }
     throw error
   }

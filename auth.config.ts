@@ -1,4 +1,5 @@
 import type { NextAuthConfig } from "next-auth"
+import { UNRESTRICTED_PATHS } from "@/app/lib/utils/constants"
 
 export const authConfig = {
   pages: {
@@ -7,8 +8,7 @@ export const authConfig = {
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
-      const unrestrictedPaths = ["/login"]
-      const isOnRestricted = !unrestrictedPaths.some(path =>
+      const isOnRestricted = !UNRESTRICTED_PATHS.some(path =>
         nextUrl.pathname.startsWith(path)
       )
       if (isOnRestricted) {
