@@ -2,8 +2,9 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
-import { Ellipsis } from "lucide-react"
+import { useMemo, useState } from "react"
+import { Ellipsis, Eye, EyeOff } from "lucide-react"
+import { clsx } from "clsx"
 
 import {
   Table,
@@ -28,7 +29,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog"
-import { Separator } from "@/app/components/ui/separator"
 import { Button } from "@/app/components/ui/button"
 import { FlashcardSheet } from "@/app/components/ui/flashcard-sheet"
 import { FlashcardDialog } from "@/app/components/ui/flashcard-dialog"
@@ -36,6 +36,7 @@ import { useDayjs } from "@/app/hooks/use-dayjs"
 import { SelectDeck, SelectCard } from "@/app/db/schema"
 import { deleteCard } from "@/app/lib/actions"
 import { getMaxSrsLevel } from "@/app/lib/utils/srs"
+import { Separator } from "@radix-ui/react-separator"
 
 enum Mode {
   CREATE = "create",
@@ -53,12 +54,25 @@ interface DeckViewProps {
 export function DeckView({ deck, cards }: DeckViewProps) {
   const pathname = usePathname()
   const [mode, setMode] = useState<Mode>(Mode.IDLE)
+  const [backHidden, setBackHidden] = useState(true)
   const [activeCardIndex, setActiveCardIndex] = useState<number | undefined>()
   const activeCard =
     activeCardIndex !== undefined ? cards[activeCardIndex] : undefined
   const dayjs = useDayjs()
 
   const maxSrsLevel = getMaxSrsLevel(deck.srsTimingsType)
+
+  // sort cards by date, show ones that are due now or soon at the top
+  const cardsSorted = useMemo(
+    () =>
+      cards.sort((a, b) => {
+        const aDate = a.nextReviewDate ? new Date(a.nextReviewDate) : Infinity
+        const bDate = b.nextReviewDate ? new Date(b.nextReviewDate) : Infinity
+
+        return aDate === bDate ? 0 : aDate > bDate ? 1 : -1
+      }),
+    [cards]
+  )
 
   return (
     <div>
@@ -83,17 +97,29 @@ export function DeckView({ deck, cards }: DeckViewProps) {
 
       <div className="mt-2 text-sm">
         <div>{deck.description}</div>
-        <div className="mt-2 flex items-center space-x-3">
-          <div>
-            lessons per day:{" "}
-            <span className="font-medium">{deck.lessonsPerDay}</span>
-          </div>
-          <Separator className="h-4" orientation="vertical" />
-          <div>
-            lessons batch size:{" "}
-            <span className="font-medium">{deck.lessonsBatchSize}</span>
-          </div>
+        <Separator className="my-2 h-px w-full bg-muted" />
+        <div>
+          lessons per day:{" "}
+          <span className="font-medium">{deck.lessonsPerDay}</span>
         </div>
+        <div>
+          lessons batch size:{" "}
+          <span className="font-medium">{deck.lessonsBatchSize}</span>
+        </div>
+        <div>
+          max level: <span className="font-medium">{maxSrsLevel}</span>
+        </div>
+        <Separator className="my-2 h-px w-full bg-muted" />
+        <Button onClick={() => setBackHidden(!backHidden)} variant="outline">
+          <div className="flex items-center gap-2">
+            {backHidden ? (
+              <Eye className="relative top-0.5 !size-3.5" />
+            ) : (
+              <EyeOff className="relative top-0.5 !size-3.5" />
+            )}
+            <span>{backHidden ? "show" : "hide"} back of cards</span>
+          </div>
+        </Button>
       </div>
 
       <div className="pt-5">
@@ -119,13 +145,20 @@ export function DeckView({ deck, cards }: DeckViewProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cards.map((card, index) => (
+            {cardsSorted.map((card, index) => (
               <TableRow key={card.id}>
                 <TableCell className="max-w-28 overflow-x-hidden text-ellipsis whitespace-nowrap font-medium">
                   {card.front}
                 </TableCell>
                 <TableCell className="max-w-28 overflow-x-hidden text-ellipsis whitespace-nowrap">
-                  {card.back}
+                  <div
+                    className={clsx("inline", {
+                      "select-none bg-muted text-muted": backHidden,
+                    })}
+                  >
+                    {backHidden && <span className="sr-only">hidden</span>}
+                    <span aria-hidden={backHidden}>{card.back}</span>
+                  </div>
                 </TableCell>
                 <TableCell className="text-right">
                   {card.level}
@@ -191,6 +224,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
         <FlashcardSheet
           deckId={deck.id}
           open={mode === Mode.CREATE}
+          mode={Mode.CREATE}
           onOpenChange={open => {
             if (!open) {
               setMode(Mode.IDLE)
@@ -201,9 +235,9 @@ export function DeckView({ deck, cards }: DeckViewProps) {
           submitLabel="create"
           submitPendingLabel="creating…"
         />
-        {/* TODO: make sure edit sheet is closed after successfully editing */}
         <FlashcardSheet
           deckId={deck.id}
+          mode={Mode.EDIT}
           card={activeCard}
           open={mode === Mode.EDIT}
           onOpenChange={open => {

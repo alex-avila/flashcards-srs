@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { DialogProps } from "@radix-ui/react-dialog"
 import {
   Sheet,
@@ -9,14 +8,16 @@ import {
   SheetTitle,
   SheetFooter,
 } from "@/app/components/ui/sheet"
-import { FlashcardForm } from "@/app/components/ui/flashcard-form"
-import { Button } from "@/app/components/ui/button"
+import {
+  FlashcardFormProvider,
+  FlashcardForm,
+  FlashcardFormFooter,
+} from "@/app/components/ui/flashcard-form"
 import { SelectCard } from "@/app/db/schema"
-
-const FORM_ID = "card-sheet-form"
 
 interface FlashcardSheetProps {
   deckId: number
+  mode: "create" | "edit"
   card?: SelectCard
   title: string
   description: string
@@ -28,6 +29,7 @@ interface FlashcardSheetProps {
 
 export function FlashcardSheet({
   deckId,
+  mode,
   card,
   title,
   description,
@@ -36,8 +38,6 @@ export function FlashcardSheet({
   onOpenChange,
   open,
 }: FlashcardSheetProps) {
-  const [isPending, setIsPending] = useState(false)
-
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetPortal>
@@ -45,26 +45,24 @@ export function FlashcardSheet({
           side="bottom"
           className="mx-auto max-w-md rounded-t-md shadow"
         >
-          <SheetHeader>
-            <SheetTitle>{title}</SheetTitle>
-            <SheetDescription className="sr-only">
-              {description}
-            </SheetDescription>
-          </SheetHeader>
-          <div className="pb-4 text-left">
-            <FlashcardForm
-              formId={FORM_ID}
-              deckId={deckId}
-              card={card}
-              onIsPendingUpdate={setIsPending}
-              withSubmitButton={false}
-            />
-          </div>
-          <SheetFooter>
-            <Button form={FORM_ID} type="submit" disabled={isPending}>
-              {!isPending ? submitLabel : submitPendingLabel}
-            </Button>
-          </SheetFooter>
+          <FlashcardFormProvider mode={mode} deckId={deckId} card={card}>
+            <SheetHeader className="text-left">
+              <SheetTitle>{title}</SheetTitle>
+              <SheetDescription className="sr-only">
+                {description}
+              </SheetDescription>
+            </SheetHeader>
+            <div className="pb-4 text-left">
+              <FlashcardForm
+                onSubmitSuccess={() => {
+                  onOpenChange?.(false)
+                }}
+              />
+            </div>
+            <SheetFooter className="sm:justify-normal">
+              <FlashcardFormFooter {...{ submitLabel, submitPendingLabel }} />
+            </SheetFooter>
+          </FlashcardFormProvider>
         </SheetContent>
       </SheetPortal>
     </Sheet>
