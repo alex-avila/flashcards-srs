@@ -35,7 +35,7 @@ export function LessonsSession({ cards, onEnd }: SessionViewProps) {
     <>
       <ProgressWithHomeLink progress={((cardIndex + 1) / cards.length) * 100} />
       <div className="mt-6 space-y-6">
-        <Flashcard card={card} flipped={flipped} onFlip={setFlipped} />
+        <Flashcard card={card} flipped={flipped} onFlipped={setFlipped} />
         <div className="mt-6 flex justify-center gap-2">
           <Button
             className="min-w-[6em]"

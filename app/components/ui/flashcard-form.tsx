@@ -17,7 +17,7 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-  FormDescription,
+  // FormDescription,
 } from "@/app/components/ui/form"
 import { Input } from "@/app/components/ui/input"
 import { Button } from "@/app/components/ui/button"
@@ -145,7 +145,7 @@ export function FlashcardForm({ onSubmitSuccess }: FlashcardFormProps) {
     () => ({
       front: card?.front || "",
       back: card?.back || "",
-      notes: card?.notes || "",
+      // notes: card?.notes || "",
     }),
     [card]
   )
@@ -220,7 +220,7 @@ export function FlashcardForm({ onSubmitSuccess }: FlashcardFormProps) {
             </FormItem>
           )}
         />
-        <FormField
+        {/* <FormField
           control={form.control}
           name="notes"
           render={({ field }) => (
@@ -240,7 +240,7 @@ export function FlashcardForm({ onSubmitSuccess }: FlashcardFormProps) {
               <FormMessage />
             </FormItem>
           )}
-        />
+        /> */}
       </form>
     </Form>
   )
