@@ -87,6 +87,29 @@ interface DeckFormSubmitProps {
   deletePendingLabel?: string
 }
 
+function DeckFormDelete({
+  deckId,
+  deleteLabel,
+  deletePendingLabel,
+}: {
+  deckId: number
+  deleteLabel?: string
+  deletePendingLabel?: string
+}) {
+  const [, formAction, isDeletePending] = useActionState(
+    deleteDeck.bind(null, { deckId }),
+    { message: "" }
+  )
+
+  return (
+    <form action={formAction}>
+      <Button type="submit" variant="destructive" disabled={isDeletePending}>
+        {!isDeletePending ? deleteLabel : deletePendingLabel}
+      </Button>
+    </form>
+  )
+}
+
 export function DeckFormSubmit({
   submitLabel = "submit",
   submitPendingLabel = "submitting…",
@@ -101,14 +124,11 @@ export function DeckFormSubmit({
         {!isPending ? submitLabel : submitPendingLabel}
       </Button>
       {deck && (
-        <Button
-          type="button"
-          variant="destructive"
-          disabled={isPending}
-          onClick={() => deleteDeck({ deckId: deck.id })}
-        >
-          {!isPending ? deleteLabel : deletePendingLabel}
-        </Button>
+        <DeckFormDelete
+          deckId={deck.id}
+          deleteLabel={deleteLabel}
+          deletePendingLabel={deletePendingLabel}
+        />
       )}
     </div>
   )
