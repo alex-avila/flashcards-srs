@@ -4,10 +4,10 @@ import { ThemeProvider } from "@/app/components/theme-provider"
 import { Toaster } from "./components/ui/toaster"
 import "./globals.css"
 
-// TODO: improve metadata
 export const metadata: Metadata = {
-  title: "Kioku Flashcards",
-  description: "Flashcards SRS app",
+  title: "Lernprozess Flashcards",
+  description:
+    "Lernprozess Flashcards can be utilized to create custom flashcards and implements a spaced repetition system to allow users to review and retain content before it's forgotten.",
 }
 
 export default function RootLayout({
