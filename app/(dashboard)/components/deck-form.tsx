@@ -1,6 +1,12 @@
 "use client"
 
-import { useActionState, useMemo, createContext, useContext } from "react"
+import {
+  useActionState,
+  useMemo,
+  createContext,
+  useContext,
+  useState,
+} from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -21,6 +27,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/app/components/ui/select"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/app/components/ui/dialog"
 import { Input } from "@/app/components/ui/input"
 import { Button } from "@/app/components/ui/button"
 import {
@@ -96,17 +110,47 @@ function DeckFormDelete({
   deleteLabel?: string
   deletePendingLabel?: string
 }) {
+  const [open, setOpen] = useState(false)
   const [, formAction, isDeletePending] = useActionState(
     deleteDeck.bind(null, { deckId }),
     { message: "" }
   )
 
   return (
-    <form action={formAction}>
-      <Button type="submit" variant="destructive" disabled={isDeletePending}>
+    <>
+      <Button
+        type="button"
+        variant="destructive"
+        disabled={isDeletePending}
+        onClick={() => setOpen(true)}
+      >
         {!isDeletePending ? deleteLabel : deletePendingLabel}
       </Button>
-    </form>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete deck</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this deck?
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button onClick={() => setOpen(false)}>Cancel</Button>
+              <form action={formAction}>
+                <Button
+                  type="submit"
+                  variant="destructive"
+                  disabled={isDeletePending}
+                >
+                  {!isDeletePending ? deleteLabel : deletePendingLabel}
+                </Button>
+              </form>
+            </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
 
