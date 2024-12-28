@@ -107,9 +107,9 @@ export function FlashcardFormFooter({
   const { formState: state, formId, isPending } = useFlashcardFormContext()
 
   return (
-    <div className="space-y-2">
+    <div className="flex w-full flex-col gap-3">
       {!state.success && state.message && (
-        <div className="pb-3 text-sm text-destructive">
+        <div className="text-sm text-destructive sm:justify-normal">
           <div className="font-medium">{state.message}</div>
           {state.errors && (
             <ul className="list-disc ps-5 pt-0.5">
@@ -120,7 +120,12 @@ export function FlashcardFormFooter({
           )}
         </div>
       )}
-      <Button form={formId} type="submit" disabled={isPending}>
+      <Button
+        className="sm:ml-auto"
+        form={formId}
+        type="submit"
+        disabled={isPending}
+      >
         {!isPending ? submitLabel : submitPendingLabel}
       </Button>
     </div>
@@ -199,7 +204,7 @@ export function FlashcardForm({ onSubmitSuccess }: FlashcardFormProps) {
           name="front"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>front</FormLabel>
+              <FormLabel>Front</FormLabel>
               <FormControl>
                 <Input autoFocus {...field} />
               </FormControl>
@@ -212,7 +217,7 @@ export function FlashcardForm({ onSubmitSuccess }: FlashcardFormProps) {
           name="back"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>back</FormLabel>
+              <FormLabel>Back</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>

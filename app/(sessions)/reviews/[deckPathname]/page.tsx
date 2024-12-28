@@ -10,11 +10,11 @@ export default async function ReviewsPage({ params }: ReviewsPageProps) {
   const { deck, reviews } = await fetchReviews({ pathname })
 
   if (!deck) {
-    return <div>deck not found</div>
+    return <div>Deck not found</div>
   }
 
   if (!reviews?.length) {
-    return <div>no reviews</div>
+    return <div>No reviews for now</div>
   }
 
   return <ReviewView deckSrsTimingsType={deck.srsTimingsType} cards={reviews} />

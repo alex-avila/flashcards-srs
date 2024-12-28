@@ -10,11 +10,11 @@ export default async function LessonsPage({ params }: LessonsPageProps) {
   const { deck, lessons } = await fetchLessons({ pathname })
 
   if (!deck) {
-    return <div>deck not found</div>
+    return <div>Deck not found</div>
   }
 
   if (!lessons?.length) {
-    return <div>no lessons for today</div>
+    return <div>No lessons for today</div>
   }
 
   return (

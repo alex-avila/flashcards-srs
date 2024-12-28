@@ -30,7 +30,7 @@ export default function NewDeckPage() {
           <DeckForm />
         </CardContent>
         <CardFooter>
-          <DeckFormSubmit submitLabel="create" submitPendingLabel="creating…" />
+          <DeckFormSubmit submitLabel="Create" submitPendingLabel="Creating…" />
         </CardFooter>
       </DeckFormProvider>
     </Card>

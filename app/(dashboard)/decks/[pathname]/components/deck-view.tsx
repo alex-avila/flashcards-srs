@@ -26,6 +26,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog"
@@ -37,6 +38,7 @@ import { SelectDeck, SelectCard } from "@/app/db/schema"
 import { deleteCard } from "@/app/lib/actions"
 import { getMaxSrsLevel } from "@/app/lib/utils/srs"
 import { Separator } from "@radix-ui/react-separator"
+import { Flashcard } from "@/app/components/ui/flashcard"
 
 enum Mode {
   CREATE = "create",
@@ -91,7 +93,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
           </span>
         </h2>
         <Button variant="link" onClick={() => setMode(Mode.CREATE)}>
-          + new card
+          + New card
         </Button>
       </div>
 
@@ -99,25 +101,25 @@ export function DeckView({ deck, cards }: DeckViewProps) {
         <div>{deck.description}</div>
         <Separator className="my-2 h-px w-full bg-muted" />
         <div>
-          lessons per day:{" "}
+          Lessons per day:{" "}
           <span className="font-medium">{deck.lessonsPerDay}</span>
         </div>
         <div>
-          lessons batch size:{" "}
+          Lessons batch size:{" "}
           <span className="font-medium">{deck.lessonsBatchSize}</span>
         </div>
         <div>
-          max level: <span className="font-medium">{maxSrsLevel}</span>
+          Max level: <span className="font-medium">{maxSrsLevel}</span>
         </div>
         <Separator className="my-2 h-px w-full bg-muted" />
         <Button onClick={() => setBackHidden(!backHidden)} variant="outline">
           <div className="flex items-center gap-2">
+            <span>{backHidden ? "Show" : "Hide"} back of cards</span>
             {backHidden ? (
               <Eye className="relative top-0.5 !size-3.5" />
             ) : (
               <EyeOff className="relative top-0.5 !size-3.5" />
             )}
-            <span>{backHidden ? "show" : "hide"} back of cards</span>
           </div>
         </Button>
       </div>
@@ -126,22 +128,22 @@ export function DeckView({ deck, cards }: DeckViewProps) {
         {/* TODO: use the data table example instead for more advanced features */}
         <Table>
           <TableCaption>
-            a list of the cards and associated stats.
-            <ul>
-              <li>
-                <span className="font-bold">*</span> = max level
-              </li>
-            </ul>
+            <div>A list of the flashcards and associated stats.</div>
+            <div className="pt-3 text-center text-sm text-muted-foreground">
+              Last updated on: {dayjs().format("MMMM DD, YYYY [at] h:mma")}
+            </div>
           </TableCaption>
           <TableHeader>
             <TableRow>
-              <TableHead className="min-w-24 text-xs">front</TableHead>
-              <TableHead className="text-xs">back</TableHead>
-              <TableHead className="text-right text-xs">level</TableHead>
+              <TableHead className="text-xs">Front</TableHead>
+              <TableHead className="text-xs">Back</TableHead>
+              <TableHead className="text-right text-xs">Level</TableHead>
               <TableHead className="whitespace-nowrap text-right text-xs">
-                next review in
+                Next review in
               </TableHead>
-              <TableHead className="sr-only text-xs">card actions</TableHead>
+              <TableHead className="sr-only text-xs">
+                Flashcard actions
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -175,7 +177,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost">
-                        <Ellipsis aria-label="open card actions menu" />
+                        <Ellipsis aria-label="open flashcard actions menu" />
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
@@ -185,7 +187,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                           setActiveCardIndex(index)
                         }}
                       >
-                        view
+                        View
                       </DropdownMenuItem>
                       <DropdownMenuItem
                         onClick={() => {
@@ -193,7 +195,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                           setActiveCardIndex(index)
                         }}
                       >
-                        edit
+                        Edit
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
@@ -202,7 +204,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                           setActiveCardIndex(index)
                         }}
                       >
-                        delete
+                        Delete
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -230,10 +232,10 @@ export function DeckView({ deck, cards }: DeckViewProps) {
               setMode(Mode.IDLE)
             }
           }}
-          title="create a new card"
-          description="enter new card details and submit to add to the deck"
-          submitLabel="create"
-          submitPendingLabel="creating…"
+          title="Add a flashcard"
+          description="Enter new flashcard details and submit to add to the deck"
+          submitLabel="Add flashcard"
+          submitPendingLabel="Adding…"
         />
         <FlashcardSheet
           deckId={deck.id}
@@ -245,10 +247,10 @@ export function DeckView({ deck, cards }: DeckViewProps) {
               setMode(Mode.IDLE)
             }
           }}
-          title="edit"
-          description="edit card details and submit to update"
-          submitLabel="update"
-          submitPendingLabel="updating…"
+          title="Edit flashcard"
+          description="Edit flashcard details and submit to update"
+          submitLabel="Edit flashcard"
+          submitPendingLabel="Updating…"
         />
         <Dialog
           open={mode === Mode.DELETE}
@@ -260,18 +262,15 @@ export function DeckView({ deck, cards }: DeckViewProps) {
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>delete card</DialogTitle>
+              <DialogTitle>Delete card</DialogTitle>
               <DialogDescription>
-                are you sure you want to delete this card?
-                {
-                  <>
-                    <span>{": "}</span>
-                    <span className="font-medium">{activeCard?.front}</span>
-                  </>
-                }
+                Are you sure you want to delete this card?
               </DialogDescription>
-              <div className="mx-auto flex gap-2 pt-2">
-                <Button onClick={() => setMode(Mode.IDLE)}>cancel</Button>
+            </DialogHeader>
+            {activeCard && <Flashcard card={activeCard} />}
+            <DialogFooter>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Button onClick={() => setMode(Mode.IDLE)}>Cancel</Button>
                 <Button
                   variant="destructive"
                   onClick={async () => {
@@ -281,16 +280,12 @@ export function DeckView({ deck, cards }: DeckViewProps) {
                     }
                   }}
                 >
-                  delete
+                  Delete
                 </Button>
               </div>
-            </DialogHeader>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
-      </div>
-
-      <div className="pt-3 text-center text-sm text-muted-foreground">
-        last updated: {dayjs().format("MMMM DD, YYYY [at] h:mma").toLowerCase()}
       </div>
     </div>
   )

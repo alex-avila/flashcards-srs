@@ -18,14 +18,17 @@ export default function LoginPage() {
     <Card className="mx-auto max-w-md space-y-3 md:mt-6">
       <CardHeader>
         <CardTitle>
-          <h2>sign up</h2>
+          <h2>Create an account</h2>
         </CardTitle>
         <CardDescription>
-          click{" "}
-          <Link className="underline" href="/login">
-            here
-          </Link>{" "}
-          to log in instead
+          <div>Creates an account with some default decks and a demo deck.</div>
+          <div className="pt-1">
+            Already have an account? Click{" "}
+            <Link className="underline" href="/login">
+              here
+            </Link>{" "}
+            to log in
+          </div>
         </CardDescription>
       </CardHeader>
       <SignupFormProvider>
@@ -34,8 +37,8 @@ export default function LoginPage() {
         </CardContent>
         <CardFooter>
           <SignupFormSubmit
-            submitLabel="sign up"
-            submitPendingLabel="pending…"
+            submitLabel="Sign up"
+            submitPendingLabel="Processing…"
           />
         </CardFooter>
       </SignupFormProvider>

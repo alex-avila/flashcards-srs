@@ -7,6 +7,7 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
+  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/app/components/ui/dialog"
@@ -114,18 +115,16 @@ export function LessonsView({
             <DialogTitle>Lessons batch finished!</DialogTitle>
             <DialogDescription>
               {!isLastBatch
-                ? "Continue or go back to dashborad?"
+                ? "Continue or go back to dashboard?"
                 : "Go back to the dashboard?"}
             </DialogDescription>
-            <div className="mx-auto mt-4 flex gap-2">
-              <Button asChild variant="secondary">
-                <Link href="/">Back to dashboard</Link>
-              </Button>
-              {!isLastBatch && (
-                <Button onClick={goToNextBatch}>Continue</Button>
-              )}
-            </div>
           </DialogHeader>
+          <DialogFooter className="gap-y-2">
+            <Button asChild variant="secondary">
+              <Link href="/">Back to dashboard</Link>
+            </Button>
+            {!isLastBatch && <Button onClick={goToNextBatch}>Continue</Button>}
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

@@ -114,9 +114,9 @@ export function SignupForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>username</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
-                <Input autoComplete="username" {...field} />
+                <Input autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -127,13 +127,9 @@ export function SignupForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>password </FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input
-                  type="password"
-                  autoComplete="current-password"
-                  {...field}
-                />
+                <Input type="password" autoComplete="off" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

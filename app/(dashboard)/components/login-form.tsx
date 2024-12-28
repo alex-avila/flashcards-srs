@@ -114,7 +114,7 @@ export function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>username</FormLabel>
+              <FormLabel>Username</FormLabel>
               <FormControl>
                 <Input autoComplete="username" {...field} />
               </FormControl>
@@ -127,7 +127,7 @@ export function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>password </FormLabel>
+              <FormLabel>Password</FormLabel>
               <FormControl>
                 <Input
                   type="password"

@@ -52,14 +52,14 @@ export function FlashcardSheet({
                 {description}
               </SheetDescription>
             </SheetHeader>
-            <div className="pb-4 text-left">
+            <div className="py-2 pb-4 text-left">
               <FlashcardForm
                 onSubmitSuccess={() => {
                   onOpenChange?.(false)
                 }}
               />
             </div>
-            <SheetFooter className="sm:justify-normal">
+            <SheetFooter>
               <FlashcardFormFooter {...{ submitLabel, submitPendingLabel }} />
             </SheetFooter>
           </FlashcardFormProvider>

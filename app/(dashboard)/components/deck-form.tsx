@@ -111,10 +111,10 @@ function DeckFormDelete({
 }
 
 export function DeckFormSubmit({
-  submitLabel = "submit",
-  submitPendingLabel = "submitting…",
-  deleteLabel = "delete",
-  deletePendingLabel = "deleting…",
+  submitLabel = "Submit",
+  submitPendingLabel = "Submitting…",
+  deleteLabel = "Delete",
+  deletePendingLabel = "Deleting…",
 }: DeckFormSubmitProps) {
   const { formId, deck, isPending } = useDeckForm()
 
@@ -174,7 +174,7 @@ export function DeckForm() {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>name</FormLabel>
+              <FormLabel>Name</FormLabel>
               <FormControl>
                 <Input {...field} />
               </FormControl>
@@ -188,7 +188,7 @@ export function DeckForm() {
           render={({ field }) => (
             <FormItem>
               <FormLabel>
-                description{" "}
+                Description{" "}
                 <span className="font-normal text-muted-foreground">
                   (optional)
                 </span>
@@ -205,12 +205,12 @@ export function DeckForm() {
           name="lessonsPerDay"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>lessons per day</FormLabel>
+              <FormLabel>Lessons per day</FormLabel>
               <FormControl>
                 <Input type="number" {...field} />
               </FormControl>
               <FormDescription>
-                goal for how many cards you wanna learn per day
+                How many lessons to learn per day
               </FormDescription>
               <FormMessage />
             </FormItem>
@@ -221,7 +221,7 @@ export function DeckForm() {
           name="lessonsBatchSize"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>lessons batch size</FormLabel>
+              <FormLabel>Lessons batch size</FormLabel>
               <Select
                 name="lessonsBatchSize"
                 onValueChange={field.onChange}
@@ -241,7 +241,7 @@ export function DeckForm() {
                 </SelectContent>
               </Select>
               <FormDescription>
-                how many cards to learn per learn session
+                How many cards to learn per lessons session
               </FormDescription>
               <FormMessage />
             </FormItem>

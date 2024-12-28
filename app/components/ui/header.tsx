@@ -11,7 +11,7 @@ export default function Header() {
           <NavigationMenu.Item>
             <NavigationMenu.Link asChild>
               <Link href="/" className="font-medium">
-                <h1>kioku flashcards</h1>
+                <h1>Lernprozess Flashcards</h1>
               </Link>
             </NavigationMenu.Link>
           </NavigationMenu.Item>

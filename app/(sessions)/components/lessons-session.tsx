@@ -46,7 +46,7 @@ export function LessonsSession({ cards, onEnd }: SessionViewProps) {
             Previous
           </Button>
           <Button className="min-w-[6em]" onClick={handleNext}>
-            {isLastCard ? "Finish!" : "Next"}
+            {isLastCard ? "Finish" : "Next"}
           </Button>
         </div>
       </div>

@@ -27,27 +27,31 @@ export function Deck({ deck }: DeckProps) {
       <CardContent>
         <div className="flex flex-col">
           <div className="space-y-2 pb-3">
-            <div>lessons: {deck.lessonsCount}</div>
             {deck.lessonsCount > 0 ? (
-              <Button asChild>
-                <Link href={`/lessons/${pathnameNormalized}`}>
-                  start lessons
-                </Link>
-              </Button>
+              <>
+                <div>{deck.lessonsCount} lessons</div>
+                <Button asChild>
+                  <Link href={`/lessons/${pathnameNormalized}`}>
+                    Start lessons
+                  </Link>
+                </Button>
+              </>
             ) : (
-              <div>no more lessons for today!</div>
+              <div>No more lessons for today.</div>
             )}
           </div>
           <div className="space-y-2 border-t pt-3">
-            <div>reviews: {deck.reviewsCount}</div>
             {deck.reviewsCount > 0 ? (
-              <Button asChild>
-                <Link href={`/reviews/${pathnameNormalized}`}>
-                  start reviews
-                </Link>
-              </Button>
+              <>
+                <div>{deck.reviewsCount} reviews</div>
+                <Button asChild>
+                  <Link href={`/reviews/${pathnameNormalized}`}>
+                    Start reviews
+                  </Link>
+                </Button>
+              </>
             ) : (
-              <div>no more reviews to do right now</div>
+              <div>No reviews are due right now.</div>
             )}
           </div>
         </div>

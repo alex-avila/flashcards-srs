@@ -18,11 +18,11 @@ export default async function ViewDeckPage({ params }: ViewDeckPageProps) {
     return (
       <>
         <div>
-          deck with pathname &ldquo;
+          Deck with pathname &ldquo;
           <span className="font-medium">{pathname}</span>&rdquo; not found
         </div>
         <Button className="mt-2" asChild>
-          <Link href="/">back to dashboard</Link>
+          <Link href="/">Back to dashboard</Link>
         </Button>
       </>
     )

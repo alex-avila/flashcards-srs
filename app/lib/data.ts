@@ -1,4 +1,4 @@
-import { eq, count, sql, and } from "drizzle-orm"
+import { eq, count, sql, and, asc } from "drizzle-orm"
 import { db } from "@/app/db"
 import { decks, cards } from "@/app/db/schema"
 import { auth } from "@/auth"
@@ -45,6 +45,7 @@ export async function fetchDecksForDashboard() {
     })
     .from(decks)
     .leftJoin(cardCounts, eq(decks.id, cardCounts.deckId))
+    .orderBy(asc(decks.id))
     .where(eq(decks.userId, user.id))
 
   return result

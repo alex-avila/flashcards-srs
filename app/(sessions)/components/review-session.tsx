@@ -146,7 +146,7 @@ export function ReviewSession({
             type="submit"
             disabled={buttonDisabled}
           >
-            {isFinished ? "Finish!" : isAnswered ? "Next" : "Submit"}
+            {isFinished ? "Finish" : isAnswered ? "Next" : "Submit"}
           </Button>
         </form>
       </div>

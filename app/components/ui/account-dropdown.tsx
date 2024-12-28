@@ -33,7 +33,7 @@ export async function AccountDropdown() {
           }}
         >
           <DropdownMenuItem className="w-full" asChild>
-            <button type="submit">log out</button>
+            <button type="submit">Log out</button>
           </DropdownMenuItem>
         </form>
       </DropdownMenuContent>
