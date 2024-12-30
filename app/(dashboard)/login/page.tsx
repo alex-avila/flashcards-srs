@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import {
   LoginFormProvider,
@@ -12,6 +13,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card"
+
+export const metadata: Metadata = {
+  title: "Log in",
+}
 
 export default function LoginPage() {
   return (

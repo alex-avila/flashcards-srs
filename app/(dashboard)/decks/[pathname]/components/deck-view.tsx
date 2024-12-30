@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useMemo, useState } from "react"
+import { useState } from "react"
 import { Ellipsis, Eye, EyeOff } from "lucide-react"
 import { clsx } from "clsx"
 
@@ -63,18 +63,6 @@ export function DeckView({ deck, cards }: DeckViewProps) {
   const dayjs = useDayjs()
 
   const maxSrsLevel = getMaxSrsLevel(deck.srsTimingsType)
-
-  // sort cards by date, show ones that are due now or soon at the top
-  const cardsSorted = useMemo(
-    () =>
-      cards.sort((a, b) => {
-        const aDate = a.nextReviewDate ? new Date(a.nextReviewDate) : Infinity
-        const bDate = b.nextReviewDate ? new Date(b.nextReviewDate) : Infinity
-
-        return aDate === bDate ? 0 : aDate > bDate ? 1 : -1
-      }),
-    [cards]
-  )
 
   return (
     <div>
@@ -147,7 +135,7 @@ export function DeckView({ deck, cards }: DeckViewProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {cardsSorted.map((card, index) => (
+            {cards.map((card, index) => (
               <TableRow key={card.id}>
                 <TableCell className="max-w-28 overflow-x-hidden text-ellipsis whitespace-nowrap font-medium">
                   {card.front}

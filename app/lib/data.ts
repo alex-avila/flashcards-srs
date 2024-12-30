@@ -110,6 +110,7 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
   const [deckInfo] = await db
     .select({
       id: decks.id,
+      name: decks.name,
       pathname: decks.pathname,
       lessonsPerDay: decks.lessonsPerDay,
       lessonsBatchSize: decks.lessonsBatchSize,
@@ -145,7 +146,7 @@ export async function fetchLessons({ pathname }: { pathname: string }) {
 export async function fetchReviews({ pathname }: { pathname: string }) {
   const { user } = await getSession()
   const deck = await db.query.decks.findFirst({
-    columns: { id: true, srsTimingsType: true },
+    columns: { id: true, name: true, srsTimingsType: true },
     where: (decks, { eq }) =>
       and(
         eq(decks.userId, user.id),

@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { Button } from "@/app/components/ui/button"
 import {
@@ -14,11 +15,18 @@ import {
 } from "@/app/components/ui/card"
 import { fetchDeck } from "@/app/lib/data"
 
-export default async function DeckSettingsPage({
-  params,
-}: {
+interface Props {
   params: Promise<{ pathname: string }>
-}) {
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const pathname = (await params).pathname
+  const deck = await fetchDeck({ pathname })
+
+  return { title: `Settings - ${deck.name}` }
+}
+
+export default async function DeckSettingsPage({ params }: Props) {
   const pathname = (await params).pathname
 
   try {

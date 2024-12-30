@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import Link from "next/link"
 import { DeckView } from "./components/deck-view"
 import { Button } from "@/app/components/ui/button"
@@ -7,13 +8,29 @@ interface ViewDeckPageProps {
   params: Promise<{ pathname: string }>
 }
 
+export async function generateMetadata({
+  params,
+}: ViewDeckPageProps): Promise<Metadata> {
+  const pathname = (await params).pathname
+  const [deck] = await fetchDeckWithCards({ pathname })
+
+  return { title: deck.name }
+}
+
 export default async function ViewDeckPage({ params }: ViewDeckPageProps) {
   const pathname = (await params).pathname
 
   try {
     const [deck, cards] = await fetchDeckWithCards({ pathname })
 
-    return <DeckView deck={deck} cards={cards} />
+    const cardsSorted = cards.sort((a, b) => {
+      const aDate = a.nextReviewDate ? new Date(a.nextReviewDate) : Infinity
+      const bDate = b.nextReviewDate ? new Date(b.nextReviewDate) : Infinity
+
+      return aDate === bDate ? 0 : aDate > bDate ? 1 : -1
+    })
+
+    return <DeckView deck={deck} cards={cardsSorted} />
   } catch {
     return (
       <>

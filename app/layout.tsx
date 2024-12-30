@@ -5,7 +5,10 @@ import { Toaster } from "./components/ui/toaster"
 import "./globals.css"
 
 export const metadata: Metadata = {
-  title: "Lernprozess Flashcards",
+  title: {
+    template: "%s | Lernprozess Flashcards",
+    default: "Lernprozess Flashcards",
+  },
   description:
     "Lernprozess Flashcards can be utilized to create custom flashcards and implements a spaced repetition system to allow users to review and retain content before it's forgotten.",
 }

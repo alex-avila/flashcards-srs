@@ -1,3 +1,4 @@
+import type { Metadata } from "next"
 import {
   DeckFormProvider,
   DeckForm,
@@ -11,6 +12,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/app/components/ui/card"
+
+export const metadata: Metadata = {
+  title: "New deck",
+}
 
 // NOTE: could be a modal in the dashboard page, but it's good practice to see how to handle redirecting after for submissions
 export default function NewDeckPage() {
