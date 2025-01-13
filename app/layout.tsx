@@ -25,7 +25,7 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body>
-        <div className="mx-auto max-w-screen-lg">
+        <div className="mx-auto flex min-h-dvh max-w-screen-lg flex-col">
           <ThemeProvider
             attribute="class"
             defaultTheme="light"

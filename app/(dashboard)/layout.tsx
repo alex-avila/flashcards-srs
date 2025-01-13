@@ -1,4 +1,5 @@
 import Header from "@/app/components/ui/header"
+import { Footer } from "@/app/components/ui/footer"
 
 export default function DashboardLayout({
   children,
@@ -8,7 +9,8 @@ export default function DashboardLayout({
   return (
     <>
       <Header />
-      <main className="p-4">{children}</main>
+      <main className="flex-1 p-4">{children}</main>
+      <Footer />
     </>
   )
 }
