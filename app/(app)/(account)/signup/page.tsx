@@ -26,7 +26,7 @@ export default function LoginPage() {
           <h2>Create an account</h2>
         </CardTitle>
         <CardDescription>
-          <div>Creates an account with some default decks and a demo deck.</div>
+          <div>New account includes some default decks and a demo deck.</div>
           <div className="pt-1">
             Already have an account? Click{" "}
             <Link className="underline" href="/login">
