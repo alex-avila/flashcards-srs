@@ -1,7 +1,7 @@
 import * as NavigationMenu from "@radix-ui/react-navigation-menu"
 import { ModeToggle } from "@/app/components/ui/mode-toggle"
 import Link from "next/link"
-import { AccountDropdown } from "./account-dropdown"
+import { AccountMenu } from "./account-menu"
 import { auth } from "@/auth"
 
 export default async function Header() {
@@ -22,7 +22,7 @@ export default async function Header() {
             </NavigationMenu.Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item className="ml-auto mr-2">
-            <AccountDropdown />
+            <AccountMenu />
           </NavigationMenu.Item>
           <NavigationMenu.Item>
             <ModeToggle />

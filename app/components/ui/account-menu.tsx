@@ -12,7 +12,7 @@ import {
 import { Button } from "@/app/components/ui/button"
 import { signOut, auth } from "@/auth"
 
-export async function AccountDropdown() {
+export async function AccountMenu() {
   const session = await auth()
 
   if (!session?.user)
