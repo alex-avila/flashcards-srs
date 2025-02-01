@@ -2,15 +2,21 @@ import * as NavigationMenu from "@radix-ui/react-navigation-menu"
 import { ModeToggle } from "@/app/components/ui/mode-toggle"
 import Link from "next/link"
 import { AccountDropdown } from "./account-dropdown"
+import { auth } from "@/auth"
 
-export default function Header() {
+export default async function Header() {
+  const session = await auth()
+
   return (
     <header className="mx-4 border-b py-4">
       <NavigationMenu.Root>
         <NavigationMenu.List className="flex items-center">
           <NavigationMenu.Item>
             <NavigationMenu.Link asChild>
-              <Link href="/dashboard" className="font-medium">
+              <Link
+                href={session?.user ? "/dashboard" : "/"}
+                className="font-medium"
+              >
                 <h1>Lernprozess Flashcards</h1>
               </Link>
             </NavigationMenu.Link>

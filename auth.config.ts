@@ -3,17 +3,17 @@ import { UNRESTRICTED_PATHS } from "@/app/lib/utils/constants"
 
 export const authConfig = {
   pages: {
+    newUser: "/dashboard",
     signIn: "/login",
   },
   callbacks: {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
-      const isOnRestricted = !UNRESTRICTED_PATHS.some(path =>
-        nextUrl.pathname.startsWith(path)
-      )
+      const isOnRestricted = !UNRESTRICTED_PATHS.some(path => {
+        return nextUrl.pathname === path
+      })
       if (isOnRestricted) {
-        if (isLoggedIn) return true
-        return false // Redirect unauthenticated users to login page
+        return isLoggedIn
       } else if (isLoggedIn) {
         return Response.redirect(new URL("/dashboard", nextUrl))
       }
