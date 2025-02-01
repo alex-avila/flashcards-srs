@@ -312,7 +312,6 @@ export async function setLearnedCards(
         ? or(...learnedCards.map(c => eq(cards.id, c.id)))
         : eq(cards.id, learnedCards[0].id)
     )
-  revalidatePath("/")
 }
 
 export async function updateCardSrs(
@@ -335,7 +334,6 @@ export async function updateCardSrs(
   }
 
   await db.update(cards).set(updates).where(eq(cards.id, card.id))
-  revalidatePath("/")
 }
 
 export async function authenticate(
