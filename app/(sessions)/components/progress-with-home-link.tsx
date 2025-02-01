@@ -7,7 +7,7 @@ export function ProgressWithHomeLink({ progress }: { progress: number }) {
   return (
     <div className="flex items-center gap-2">
       <Button variant="ghost" asChild>
-        <Link href="/">
+        <Link href="/dashboard">
           <House aria-label="go back to dashboard" />
         </Link>
       </Button>

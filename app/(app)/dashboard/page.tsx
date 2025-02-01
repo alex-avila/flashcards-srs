@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 import { fetchDecksForDashboard } from "@/app/lib/data"
-import { Deck } from "./components/deck"
+import { Deck } from "../components/deck"
 import { Button } from "@/app/components/ui/button"
 
 export const metadata: Metadata = {

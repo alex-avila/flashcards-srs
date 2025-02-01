@@ -39,7 +39,7 @@ export default async function ViewDeckPage({ params }: ViewDeckPageProps) {
           <span className="font-medium">{pathname}</span>&rdquo; not found
         </div>
         <Button className="mt-2" asChild>
-          <Link href="/">Back to dashboard</Link>
+          <Link href="/dashboard">Back to dashboard</Link>
         </Button>
       </>
     )

@@ -47,7 +47,7 @@ function handleRedirect(
   type: "create_deck" | "edit_deck" | "delete_deck",
   redirectPath: string
 ): never {
-  revalidatePath("/")
+  revalidatePath("/dashboard")
 
   if (type === "edit_deck") {
     revalidatePath(redirectPath)
@@ -178,7 +178,7 @@ export async function deleteDeck({
     }
   }
 
-  handleRedirect("delete_deck", "/")
+  handleRedirect("delete_deck", "/dashboard")
 }
 
 export async function createCard(

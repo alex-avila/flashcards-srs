@@ -121,7 +121,7 @@ export function LessonsView({
           </DialogHeader>
           <DialogFooter className="gap-y-2">
             <Button asChild variant="secondary">
-              <Link href="/">Back to dashboard</Link>
+              <Link href="/dashboard">Back to dashboard</Link>
             </Button>
             {!isLastBatch && <Button onClick={goToNextBatch}>Continue</Button>}
           </DialogFooter>

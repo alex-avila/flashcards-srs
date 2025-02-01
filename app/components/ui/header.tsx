@@ -10,7 +10,7 @@ export default function Header() {
         <NavigationMenu.List className="flex items-center">
           <NavigationMenu.Item>
             <NavigationMenu.Link asChild>
-              <Link href="/" className="font-medium">
+              <Link href="/dashboard" className="font-medium">
                 <h1>Lernprozess Flashcards</h1>
               </Link>
             </NavigationMenu.Link>

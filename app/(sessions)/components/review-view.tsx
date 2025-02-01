@@ -29,7 +29,7 @@ export function ReviewView({ cards, deckSrsTimingsType }: ReviewViewProps) {
     <ReviewSession
       cards={cards}
       onCorrect={updateCardSrsWithTransition}
-      onEnd={() => router.push("/")}
+      onEnd={() => router.push("/dashboard")}
       buttonDisabled={isPending}
     />
   )

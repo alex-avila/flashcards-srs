@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: "/decks",
-        destination: "/",
+        destination: "/dashboard",
         // TODO: reconsider if permanent should be false or true
         permanent: false,
       },
