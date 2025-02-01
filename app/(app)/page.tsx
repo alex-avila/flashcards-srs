@@ -8,7 +8,7 @@ import {
   BookOpen,
   Layers,
 } from "lucide-react"
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/app/components/ui/separator"
 
 export default async function LandingPage() {
   return (
