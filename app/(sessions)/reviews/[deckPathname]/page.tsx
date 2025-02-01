@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { ReviewView } from "../../components/review-view"
 import { fetchReviews } from "@/app/lib/data"
 
+export const dynamic = "force-dynamic"
+
 interface ReviewsPageProps {
   params: Promise<{ deckPathname: string }>
 }

@@ -1,7 +1,6 @@
 "use server"
 
 import { redirect } from "next/navigation"
-// TODO: figure out if revalidatePath is strictly necessary
 import { revalidatePath } from "next/cache"
 import { eq, sql, or } from "drizzle-orm"
 import bcrypt from "bcrypt"
@@ -313,6 +312,7 @@ export async function setLearnedCards(
         ? or(...learnedCards.map(c => eq(cards.id, c.id)))
         : eq(cards.id, learnedCards[0].id)
     )
+  revalidatePath("/")
 }
 
 export async function updateCardSrs(
@@ -335,6 +335,7 @@ export async function updateCardSrs(
   }
 
   await db.update(cards).set(updates).where(eq(cards.id, card.id))
+  revalidatePath("/")
 }
 
 export async function authenticate(

@@ -2,6 +2,8 @@ import type { Metadata } from "next"
 import { LessonsView } from "../../components/lessons-view"
 import { fetchLessons } from "@/app/lib/data"
 
+export const dynamic = "force-dynamic"
+
 interface LessonsPageProps {
   params: Promise<{ deckPathname: string }>
 }

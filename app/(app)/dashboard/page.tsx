@@ -4,6 +4,8 @@ import { fetchDecksForDashboard } from "@/app/lib/data"
 import { Deck } from "../components/deck"
 import { Button } from "@/app/components/ui/button"
 
+export const dynamic = "force-dynamic"
+
 export const metadata: Metadata = {
   title: "Dashboard",
 }

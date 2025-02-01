@@ -15,6 +15,8 @@ import {
 } from "@/app/components/ui/card"
 import { fetchDeck } from "@/app/lib/data"
 
+export const dynamic = "force-dynamic"
+
 interface Props {
   params: Promise<{ pathname: string }>
 }

@@ -4,6 +4,8 @@ import { DeckView } from "./components/deck-view"
 import { Button } from "@/app/components/ui/button"
 import { fetchDeckWithCards } from "@/app/lib/data"
 
+export const dynamic = "force-dynamic"
+
 interface ViewDeckPageProps {
   params: Promise<{ pathname: string }>
 }
