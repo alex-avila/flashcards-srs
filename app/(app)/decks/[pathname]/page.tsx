@@ -1,8 +1,8 @@
 import type { Metadata } from "next"
-import Link from "next/link"
-import { DeckView } from "./components/deck-view"
-import { Button } from "@/app/components/ui/button"
-import { fetchDeckWithCards } from "@/app/lib/data"
+import { Suspense } from "react"
+import { fetchDeck } from "@/app/lib/data"
+import { DeckViewWrapper } from "./components/deck-view-wrapper"
+import { DeckViewSkeleton } from "./components/deck-view-skeleton"
 
 export const dynamic = "force-dynamic"
 
@@ -10,11 +10,12 @@ interface ViewDeckPageProps {
   params: Promise<{ pathname: string }>
 }
 
+// TODO: maybe don't wait on this generateMetadata to start rendering?
 export async function generateMetadata({
   params,
 }: ViewDeckPageProps): Promise<Metadata> {
   const pathname = (await params).pathname
-  const [deck] = await fetchDeckWithCards({ pathname })
+  const deck = await fetchDeck({ pathname })
 
   return { title: deck.name }
 }
@@ -22,28 +23,9 @@ export async function generateMetadata({
 export default async function ViewDeckPage({ params }: ViewDeckPageProps) {
   const pathname = (await params).pathname
 
-  try {
-    const [deck, cards] = await fetchDeckWithCards({ pathname })
-
-    const cardsSorted = cards.sort((a, b) => {
-      const aDate = a.nextReviewDate ? new Date(a.nextReviewDate) : Infinity
-      const bDate = b.nextReviewDate ? new Date(b.nextReviewDate) : Infinity
-
-      return aDate === bDate ? 0 : aDate > bDate ? 1 : -1
-    })
-
-    return <DeckView deck={deck} cards={cardsSorted} />
-  } catch {
-    return (
-      <>
-        <div>
-          Deck with pathname &ldquo;
-          <span className="font-medium">{pathname}</span>&rdquo; not found
-        </div>
-        <Button className="mt-2" asChild>
-          <Link href="/dashboard">Back to dashboard</Link>
-        </Button>
-      </>
-    )
-  }
+  return (
+    <Suspense fallback={<DeckViewSkeleton />}>
+      <DeckViewWrapper pathname={pathname} />
+    </Suspense>
+  )
 }
