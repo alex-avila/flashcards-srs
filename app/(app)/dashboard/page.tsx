@@ -1,8 +1,9 @@
 import type { Metadata } from "next"
 import Link from "next/link"
-import { fetchDecksForDashboard } from "@/app/lib/data"
-import { Deck } from "../components/deck"
+import { Decks } from "../components/decks"
 import { Button } from "@/app/components/ui/button"
+import { Suspense } from "react"
+import { DecksSkeleton } from "../components/decks-skeleton"
 
 export const dynamic = "force-dynamic"
 
@@ -11,8 +12,6 @@ export const metadata: Metadata = {
 }
 
 export default async function DashboardPage() {
-  const decks = await fetchDecksForDashboard()
-
   return (
     <section className="grid grid-cols-1 gap-4">
       <div className="flex items-center justify-between">
@@ -22,11 +21,9 @@ export default async function DashboardPage() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(theme(columns.3xs),1fr))] gap-4">
-        {decks.map(deck => (
-          <Deck key={deck.id} deck={deck} />
-        ))}
-      </div>
+      <Suspense fallback={<DecksSkeleton />}>
+        <Decks />
+      </Suspense>
     </section>
   )
 }
