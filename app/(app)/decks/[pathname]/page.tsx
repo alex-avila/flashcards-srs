@@ -4,8 +4,6 @@ import { fetchDeck } from "@/app/lib/data"
 import { DeckViewWrapper } from "./components/deck-view-wrapper"
 import { DeckViewSkeleton } from "./components/deck-view-skeleton"
 
-export const dynamic = "force-dynamic"
-
 interface ViewDeckPageProps {
   params: Promise<{ pathname: string }>
 }

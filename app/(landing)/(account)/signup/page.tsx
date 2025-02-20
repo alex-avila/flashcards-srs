@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   title: "Sign up",
 }
 
-export default function LoginPage() {
+export default function SignupPage() {
   return (
     <Card className="mx-auto max-w-md space-y-3 md:mt-6">
       <CardHeader>

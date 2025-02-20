@@ -1,7 +1,7 @@
 import { Skeleton } from "@/app/components/ui/skeleton"
 import { Card, CardContent, CardHeader } from "@/app/components/ui/card"
 
-export async function DecksSkeleton() {
+export function DecksSkeleton() {
   return (
     <div className="grid grid-cols-[repeat(auto-fit,minmax(theme(columns.3xs),1fr))] gap-4">
       {[1, 2, 3, 4].map(num => (

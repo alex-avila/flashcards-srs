@@ -1,5 +1,4 @@
 import * as React from "react"
-import Link from "next/link"
 import { SquareUser } from "lucide-react"
 
 import {
@@ -15,17 +14,7 @@ import { signOut, auth } from "@/auth"
 export async function AccountMenu() {
   const session = await auth()
 
-  if (!session?.user)
-    return (
-      <div className="flex gap-2">
-        <Button variant="outline" asChild>
-          <Link href="/login">Log in</Link>
-        </Button>
-        <Button asChild>
-          <Link href="/signup">Sign up</Link>
-        </Button>
-      </div>
-    )
+  if (!session?.user) return null
 
   return (
     <DropdownMenu>

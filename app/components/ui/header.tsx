@@ -1,12 +1,14 @@
+import Link from "next/link"
 import * as NavigationMenu from "@radix-ui/react-navigation-menu"
 import { ModeToggle } from "@/app/components/ui/mode-toggle"
-import Link from "next/link"
+import { Button } from "@/app/components/ui/button"
 import { AccountMenu } from "./account-menu"
-import { auth } from "@/auth"
 
-export default async function Header() {
-  const session = await auth()
+interface HeaderProps {
+  isLanding?: boolean
+}
 
+export function Header({ isLanding = false }: HeaderProps) {
   return (
     <header className="mx-4 border-b py-4">
       <NavigationMenu.Root>
@@ -14,7 +16,7 @@ export default async function Header() {
           <NavigationMenu.Item>
             <NavigationMenu.Link asChild>
               <Link
-                href={session?.user ? "/dashboard" : "/"}
+                href={isLanding ? "/" : "/dashboard"}
                 className="font-medium"
               >
                 <h1>Lernprozess Flashcards</h1>
@@ -22,7 +24,18 @@ export default async function Header() {
             </NavigationMenu.Link>
           </NavigationMenu.Item>
           <NavigationMenu.Item className="ml-auto mr-2">
-            <AccountMenu />
+            {isLanding ? (
+              <div className="flex gap-2">
+                <Button variant="outline" asChild>
+                  <Link href="/login">Log in</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/signup">Sign up</Link>
+                </Button>
+              </div>
+            ) : (
+              <AccountMenu />
+            )}
           </NavigationMenu.Item>
           <NavigationMenu.Item>
             <ModeToggle />

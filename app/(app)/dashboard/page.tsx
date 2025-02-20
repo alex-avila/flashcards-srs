@@ -5,8 +5,6 @@ import { Button } from "@/app/components/ui/button"
 import { Suspense } from "react"
 import { DecksSkeleton } from "../components/decks-skeleton"
 
-export const dynamic = "force-dynamic"
-
 export const metadata: Metadata = {
   title: "Dashboard",
 }
